@@ -1,0 +1,72 @@
+package pages
+
+import (
+	"workshop/web/safari"
+	"workshop/web/views/components"
+	"workshop/web/views/layout"
+)
+
+templ Stats(site *safari.Site) {
+	@layout.Base(layout.BaseProps{
+		Title:       "Stats",
+		Description: "The safari in numbers: top animals, busiest countries, sightings over time and the people who spotted them.",
+		Page:        "stats",
+		Tip:         statsTip(site),
+		Styles:      []string{"/assets/css/stats.css"},
+		Scripts:     []string{"/assets/js/charts.js"},
+	}) {
+		<div class="wrap">
+			<header class="page-head">
+				<h1>The safari in numbers</h1>
+				<p class="page-head__lede">Every number here is counted from the sightings on this site, today.</p>
+				<div class="kente" aria-hidden="true"></div>
+			</header>
+			<ul class="stat-tiles" role="list">
+				@statTile(len(site.Sightings), "sightings")
+				@statTile(len(site.Animals), "kinds of animal")
+				@statTile(len(site.Countries), "countries")
+				@statTile(spotters(site), "spotters")
+			</ul>
+			<section class="highlights" aria-label="Highlights">
+				for _, h := range site.Highlights() {
+					<a class="highlight reveal" href={ templ.SafeURL(safari.SightingURL(h.Sighting)) } data-tilt>
+						<img src={ safari.Thumb(h.Sighting) } alt={ safari.Alt(h.Sighting) } loading="lazy" width="500" height="375"/>
+						<span class="highlight__text">
+							<span class="highlight__title">{ h.Title }</span>
+							<span class="highlight__value">{ h.Value }</span>
+							<span class="highlight__note">{ h.Note }</span>
+						</span>
+					</a>
+				}
+			</section>
+			<div class="charts">
+				@components.BarChart("chart-animals", "Top animals", "The ten most-seen animals. Click a name to meet it.", "sighting", site.AnimalBars(10))
+				@components.BarChart("chart-countries", "Sightings per country", countriesSummary(site), "sighting", site.CountryBars())
+				@components.ColumnChart("chart-years", "Sightings over time", yearsSummary(site), site.Columns())
+				@components.BarChart("chart-sky", "What the sky was doing", "The weather at the hour each sighting was made, from Open-Meteo.", "sighting", site.SkyBars())
+				<figure class="chart reveal" aria-labelledby="chart-spotters">
+					<figcaption>
+						<h2 id="chart-spotters" class="chart__title">Top spotters</h2>
+						<p class="chart__summary">The people with the most sightings. Asante sana!</p>
+					</figcaption>
+					<ol class="leaders">
+						for i, r := range topSpotters(site, 10) {
+							<li class={ "leaders__row", templ.KV("leaders__row--podium", i < 3) }>
+								<span class="leaders__rank">{ itoa(i + 1) }</span>
+								<span class="leaders__name">{ r.Name }</span>
+								<span class="leaders__count">{ safari.Plural(r.Count, "sighting") }</span>
+							</li>
+						}
+					</ol>
+				</figure>
+			</div>
+		</div>
+	}
+}
+
+templ statTile(n int, label string) {
+	<li class="stat-tile">
+		<span class="stat-tile__num" data-count={ itoa(n) }>{ itoa(n) }</span>
+		<span class="stat-tile__label">{ label }</span>
+	</li>
+}

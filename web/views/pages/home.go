@@ -85,3 +85,48 @@ func years(site *safari.Site) []int {
 	}
 	return out
 }
+
+// statsTip cheers on whichever animal is ahead.
+func statsTip(site *safari.Site) string {
+	if len(site.Animals) == 0 {
+		return ""
+	}
+	return site.Animals[0].Name + " sightings are winning today!"
+}
+
+// topSpotters ranks the people with the most sightings.
+func topSpotters(site *safari.Site, n int) []sighting.Tally {
+	rows := site.Recorders()
+	if len(rows) > n {
+		rows = rows[:n]
+	}
+	return rows
+}
+
+// countriesSummary names the busiest country for the chart's caption.
+func countriesSummary(site *safari.Site) string {
+	if len(site.Countries) == 0 {
+		return "No sightings yet."
+	}
+	c := site.Countries[0]
+	return c.Name + " leads with " + safari.Plural(len(c.Sightings), "sighting") + ". Click a country to visit it."
+}
+
+// yearsSummary describes the busiest year for the chart's caption.
+func yearsSummary(site *safari.Site) string {
+	best := safari.Column{}
+	for _, c := range site.Columns() {
+		if c.Value > best.Value {
+			best = c
+		}
+	}
+	if best.Value == 0 {
+		return "No sightings yet."
+	}
+	return "Sightings per year. The busiest was " + itoa(best.Year) + ", with " + safari.Plural(best.Value, "sighting") + "."
+}
+
+// galleryPhotos is every photo on the safari.
+func galleryPhotos(site *safari.Site) []safari.Shot {
+	return site.Shots()
+}

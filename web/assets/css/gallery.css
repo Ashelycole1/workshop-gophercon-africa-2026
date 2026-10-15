@@ -1,0 +1,19 @@
+/* Karibu Safari — the photo wall. Photos keep their own shape here. */
+
+.filter--slim { gap: var(--s-2); }
+
+.wall { columns: 4 260px; column-gap: var(--s-3); list-style: none; padding: 0; margin: 0; }
+.wall__item { break-inside: avoid; margin-bottom: var(--s-3); }
+.wall__item[hidden] { display: none; }
+.wall figure { margin: 0; }
+.wall figure > a {
+	display: block; overflow: hidden; border-radius: var(--radius);
+	background: var(--sand-100); box-shadow: var(--shadow);
+	text-decoration: none; min-height: 120px;
+}
+.wall img { width: 100%; height: auto; transition: transform .7s var(--ease), filter .4s; }
+.wall figure > a:hover img { transform: scale(1.05); filter: saturate(1.15); }
+.wall figcaption { display: grid; gap: 2px; padding: 8px 4px 0; font-size: .9rem; }
+.wall figcaption > a { font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; color: var(--text); text-decoration: none; }
+.wall figcaption > a:hover { color: var(--accent-text); }
+.wall__credit { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: var(--text-small); overflow-wrap: anywhere; }

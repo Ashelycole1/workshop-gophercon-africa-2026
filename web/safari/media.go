@@ -120,3 +120,20 @@ func AnimalURL(s sighting.Sighting) string {
 func CountryURL(s sighting.Sighting) string {
 	return "/countries/" + Slug(CountryName(s))
 }
+
+// Shot is one photo and the sighting it belongs to.
+type Shot struct {
+	Sighting sighting.Sighting
+	Media    sighting.Media
+}
+
+// Shots lists every photo of every sighting, newest sighting first.
+func (s *Site) Shots() []Shot {
+	var out []Shot
+	for _, sight := range s.Sightings {
+		for _, m := range Photos(sight) {
+			out = append(out, Shot{Sighting: sight, Media: m})
+		}
+	}
+	return out
+}

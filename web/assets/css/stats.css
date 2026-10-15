@@ -1,0 +1,126 @@
+/* Karibu Safari — the stats page. One hue per chart: single series need no
+   categorical colour. Acacia on sand, Kente gold on night. */
+
+:root { --mark: var(--acacia-500); --mark-strong: var(--acacia-700); --track: rgb(43 27 14 / .07); }
+:root[data-theme="night"] { --mark: var(--kente-gold); --mark-strong: var(--sun-400); --track: rgb(255 255 255 / .06); }
+
+/* Headline numbers. */
+
+.stat-tiles {
+	display: grid; gap: var(--s-3);
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	list-style: none; padding: 0; margin: 0 0 var(--s-5);
+}
+@media (min-width: 900px) { .stat-tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.stat-tile { display: grid; gap: 6px; padding: 20px 4px 0; }
+.stat-tile__num {
+	font-family: var(--font-display); font-weight: 900; line-height: 1;
+	font-size: clamp(2.8rem, 6vw, 4.6rem); letter-spacing: -.03em;
+	font-variant-numeric: tabular-nums;
+}
+.stat-tile__label { font-weight: 800; color: var(--muted); padding-top: 10px; border-top: 6px solid; border-image: var(--kente-strip) 1; }
+
+/* Highlights: photo cards with the fact over them. */
+
+.highlights {
+	display: grid; gap: var(--s-3); margin-bottom: var(--s-6);
+	grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr));
+}
+.highlight {
+	position: relative; display: block; aspect-ratio: 4 / 3; overflow: hidden;
+	border-radius: var(--radius); background: var(--sand-300); color: var(--sand-50);
+	text-decoration: none; box-shadow: var(--shadow);
+	transition: transform .35s var(--ease), box-shadow .35s var(--ease);
+}
+.highlight:hover { color: var(--sand-50); box-shadow: var(--shadow-lift); }
+.highlight img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .8s var(--ease); }
+.highlight:hover img { transform: scale(1.06); }
+.highlight::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgb(27 18 8 / 0) 20%, rgb(27 18 8 / .7) 55%, rgb(27 18 8 / .92)); }
+.highlight__text { text-shadow: 0 1px 3px rgb(0 0 0 / .6); }
+.highlight__text { position: absolute; left: 0; right: 0; bottom: 0; z-index: 1; display: grid; padding: 16px 18px; }
+.highlight__title { font-weight: 800; font-size: .9rem; color: var(--kente-gold); }
+.highlight__value { font-family: var(--font-display); font-weight: 900; font-size: 1.7rem; line-height: 1.1; }
+.highlight__note { font-size: .9rem; opacity: .9; }
+
+/* Chart cards. */
+
+.charts { display: grid; gap: var(--s-4); }
+@media (min-width: 960px) {
+	.charts { grid-template-columns: 1fr 1fr; }
+	.chart--wide { grid-column: 1 / -1; }
+}
+.chart {
+	margin: 0; padding: 24px; min-width: 0;
+	background: var(--bg-raised); border: 1px solid var(--line); border-radius: var(--radius);
+}
+.chart__title { font-size: 1.5rem; margin-bottom: 4px; }
+.chart__summary { color: var(--text-soft); margin-bottom: var(--s-4); }
+
+/* Horizontal bars, labels in ink, values beside the bar. */
+
+.bars { list-style: none; padding: 0; margin: 0; display: grid; gap: 2px; }
+.bars__row { display: grid; grid-template-columns: minmax(7em, 34%) 1fr 2.5em; align-items: center; gap: 12px; min-height: 32px; }
+.bars__label { font-weight: 700; font-size: .92rem; line-height: 1.2; color: var(--text); overflow-wrap: anywhere; }
+a.bars__label { text-decoration: none; }
+a.bars__label:hover { text-decoration: underline; color: var(--text); }
+.bars__track { position: relative; height: 22px; border-radius: 0 4px 4px 0; background: var(--track); cursor: default; }
+.bars__track:focus-visible { outline: 3px solid var(--gopher); outline-offset: 2px; }
+.bars__bar {
+	position: absolute; inset: 0 auto 0 0; width: var(--w);
+	background: var(--mark); border-radius: 0 4px 4px 0;
+	transform-origin: left; transition: background-color .2s;
+}
+.bars__row:hover .bars__bar, .bars__track:focus-visible .bars__bar { background: var(--mark-strong); }
+.js .reveal .bars__bar { transform: scaleX(0); }
+.js .reveal.is-visible .bars__bar { transform: none; transition: transform .6s var(--ease), background-color .2s; }
+.bars__value { font-weight: 800; font-variant-numeric: tabular-nums; color: var(--text); text-align: right; }
+
+/* Year columns. */
+
+.cols { display: grid; gap: 6px; }
+.cols__svg { width: 100%; height: 220px; overflow: visible; }
+.cols__base { stroke: var(--line); stroke-width: 2; vector-effect: non-scaling-stroke; }
+.cols__hit { fill: transparent; }
+.cols__bar { fill: var(--mark); transform-box: fill-box; transform-origin: bottom; transition: fill .2s; }
+.cols__col { cursor: default; outline: none; }
+.cols__col:hover .cols__bar, .cols__col:focus-visible .cols__bar { fill: var(--mark-strong); }
+.cols__col:focus-visible .cols__hit { fill: var(--track); }
+.js .reveal .cols__bar { transform: scaleY(0); }
+.js .reveal.is-visible .cols__bar { transform: none; transition: transform .6s var(--ease), fill .2s; }
+.cols__axis { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; list-style: none; padding: 0; margin: 0; font-size: .8rem; font-weight: 700; color: var(--muted); text-align: center; font-variant-numeric: tabular-nums; }
+
+/* Table view. */
+
+.chart__table { margin-top: var(--s-3); }
+.chart__table summary { cursor: pointer; font-weight: 700; color: var(--link); min-height: 44px; display: flex; align-items: center; }
+.chart__table table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+.chart__table th, .chart__table td { padding: 6px 8px; border-bottom: 1px solid var(--line); text-align: left; }
+.chart__table td { text-align: right; font-variant-numeric: tabular-nums; }
+
+/* Leaderboard: a real ranking, so numbered. */
+
+.leaders { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
+.leaders__row { display: grid; grid-template-columns: 2.4em 1fr auto; align-items: center; gap: 12px; min-height: 44px; padding: 0 12px; border-radius: 12px; }
+.leaders__row:nth-child(odd) { background: var(--track); }
+.leaders__rank { font-family: var(--font-display); font-weight: 900; font-size: 1.15rem; text-align: center; color: var(--muted); }
+.leaders__row--podium .leaders__rank { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; background: var(--kente-gold); color: var(--kente-black); }
+.leaders__row--podium:nth-child(2) .leaders__rank { background: #D9D4C7; }
+.leaders__row--podium:nth-child(3) .leaders__rank { background: #D9A066; }
+.leaders__name { font-weight: 700; overflow-wrap: anywhere; }
+.leaders__count { font-weight: 800; color: var(--muted); font-size: .9rem; white-space: nowrap; }
+
+/* Hover and focus tooltip, positioned by charts.js. */
+
+.chart-tip {
+	position: fixed; z-index: 70; pointer-events: none;
+	padding: 6px 12px; border-radius: 10px;
+	background: var(--earth-900); color: var(--sand-50);
+	font-weight: 800; font-size: .88rem; white-space: nowrap;
+	box-shadow: var(--shadow); translate: -50% calc(-100% - 10px);
+}
+:root[data-theme="night"] .chart-tip { background: var(--moon); color: var(--night-900); }
+.chart-tip[hidden] { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+	.js .reveal .bars__bar, .js .reveal .cols__bar { transform: none; }
+}

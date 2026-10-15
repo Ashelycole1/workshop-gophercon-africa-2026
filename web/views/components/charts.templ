@@ -1,0 +1,93 @@
+package components
+
+import (
+	"strconv"
+	"workshop/web/safari"
+)
+
+templ BarChart(id string, title string, summary string, unit string, bars []safari.Bar) {
+	<figure class="chart reveal" aria-labelledby={ id }>
+		<figcaption>
+			<h2 id={ id } class="chart__title">{ title }</h2>
+			<p class="chart__summary">{ summary }</p>
+		</figcaption>
+		<ol class="bars" role="list">
+			for _, b := range bars {
+				<li class="bars__row">
+					if b.Href != "" {
+						<a class="bars__label" href={ templ.SafeURL(b.Href) }>{ b.Label }</a>
+					} else {
+						<span class="bars__label">{ b.Label }</span>
+					}
+					<span class="bars__track" data-tip={ b.Label + ": " + safari.Plural(b.Value, unit) } tabindex="0" role="img" aria-label={ b.Label + ": " + safari.Plural(b.Value, unit) }>
+						<span class="bars__bar" style={ templ.SafeCSS("--w:" + b.Width) }></span>
+					</span>
+					<span class="bars__value">{ strconv.Itoa(b.Value) }</span>
+				</li>
+			}
+		</ol>
+		@chartTable(title, unit, bars)
+	</figure>
+}
+
+templ chartTable(title string, unit string, bars []safari.Bar) {
+	<details class="chart__table">
+		<summary>Show as a table</summary>
+		<table>
+			<caption class="sr-only">{ title }</caption>
+			<thead>
+				<tr><th scope="col">Name</th><th scope="col">{ safari.Title(unit) }s</th></tr>
+			</thead>
+			<tbody>
+				for _, b := range bars {
+					<tr><th scope="row">{ b.Label }</th><td>{ strconv.Itoa(b.Value) }</td></tr>
+				}
+			</tbody>
+		</table>
+	</details>
+}
+
+templ ColumnChart(id string, title string, summary string, cols []safari.Column) {
+	<figure class="chart chart--wide reveal" aria-labelledby={ id }>
+		<figcaption>
+			<h2 id={ id } class="chart__title">{ title }</h2>
+			<p class="chart__summary">{ summary }</p>
+		</figcaption>
+		<div class="cols">
+			<svg class="cols__svg" viewBox="0 0 600 200" preserveAspectRatio="none" role="img" aria-label={ summary }>
+				<line class="cols__base" x1="0" y1="200" x2="600" y2="200"></line>
+				for _, c := range cols {
+					<g class="cols__col" data-tip={ strconv.Itoa(c.Year) + ": " + safari.Plural(c.Value, "sighting") } tabindex="0" role="img" aria-label={ strconv.Itoa(c.Year) + ": " + safari.Plural(c.Value, "sighting") }>
+						<rect class="cols__hit" x={ colX(cols, c) } y="0" width={ colW(cols) } height="200"></rect>
+						if c.D != "" {
+							<path class="cols__bar" d={ c.D }></path>
+						}
+					</g>
+				}
+			</svg>
+			<ol class="cols__axis" role="list" aria-hidden="true">
+				for _, c := range cols {
+					<li>
+						if c.Label {
+							{ strconv.Itoa(c.Year) }
+						}
+					</li>
+				}
+			</ol>
+		</div>
+		<details class="chart__table">
+			<summary>Show as a table</summary>
+			<table>
+				<caption class="sr-only">{ title }</caption>
+				<thead>
+					<tr><th scope="col">Year</th><th scope="col">Sightings</th></tr>
+				</thead>
+				<tbody>
+					for _, c := range cols {
+						<tr><th scope="row">{ strconv.Itoa(c.Year) }</th><td>{ strconv.Itoa(c.Value) }</td></tr>
+					}
+				</tbody>
+			</table>
+		</details>
+	</figure>
+}

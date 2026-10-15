@@ -1,0 +1,63 @@
+package pages
+
+import (
+	"workshop/web/safari"
+	"workshop/web/views/components"
+	"workshop/web/views/layout"
+)
+
+templ Gallery(site *safari.Site) {
+	@layout.Base(layout.BaseProps{
+		Title:       "Gallery",
+		Description: "Every photo from the safari's sightings, credited to the people who took them.",
+		Page:        "gallery",
+		Tip:         "Click any photo to see it big. Arrow keys flick through.",
+		Styles:      []string{"/assets/css/gallery.css", "/assets/css/lightbox.css"},
+		Scripts:     []string{"/assets/js/filter.js", "/assets/js/lightbox.js"},
+	}) {
+		<div class="wrap">
+			<header class="page-head">
+				<h1>Gallery</h1>
+				<p class="page-head__lede">{ itoa(len(galleryPhotos(site))) } photos from the field, each credited to the person behind the lens.</p>
+				<div class="kente" aria-hidden="true"></div>
+			</header>
+			<form class="filter filter--slim" data-filter="gallery-wall" role="search" hidden>
+				<fieldset class="filter__group">
+					<legend>Show me</legend>
+					<div class="chips">
+						for _, a := range site.Animals {
+							<label class="chip chip--check">
+								<input type="checkbox" name="animal" value={ a.Slug }/>
+								<span>{ a.Name }</span>
+							</label>
+						}
+					</div>
+				</fieldset>
+				<p class="filter__status">
+					<output class="filter__count" aria-live="polite">Showing { itoa(len(galleryPhotos(site))) } of { itoa(len(galleryPhotos(site))) }</output>
+					<button class="btn btn--ghost btn--small" type="reset">Clear filters</button>
+				</p>
+			</form>
+			<ul id="gallery-wall" class="wall" role="list">
+				for _, p := range galleryPhotos(site) {
+					<li class="wall__item" data-animal={ safari.Slug(safari.AnimalName(p.Sighting.Species)) } data-search="">
+						<figure>
+							<a href={ templ.SafeURL(safari.Sized(p.Media.URL, "large")) } data-lightbox="gallery" data-caption={ safari.Alt(p.Sighting) } data-credit={ safari.Credit(p.Media) }>
+								<img src={ safari.Sized(p.Media.URL, "medium") } alt={ safari.Alt(p.Sighting) } loading="lazy" decoding="async"/>
+							</a>
+							<figcaption>
+								<a href={ templ.SafeURL(safari.SightingURL(p.Sighting)) }>{ safari.AnimalName(p.Sighting.Species) }</a>
+								if credit := safari.Credit(p.Media); credit != "" {
+									<span class="wall__credit">
+										@components.Icon("camera")
+										<span>{ credit }</span>
+									</span>
+								}
+							</figcaption>
+						</figure>
+					</li>
+				}
+			</ul>
+		</div>
+	}
+}

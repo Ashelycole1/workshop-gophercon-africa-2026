@@ -56,3 +56,13 @@ func Country(r *http.Request, site *safari.Site) (templ.Component, bool) {
 func Map(r *http.Request, site *safari.Site) (templ.Component, bool) {
 	return pages.Map(site), true
 }
+
+// Stats is the safari in numbers.
+func Stats(r *http.Request, site *safari.Site) (templ.Component, bool) {
+	return pages.Stats(site), true
+}
+
+// Gallery is every photo, as a wall.
+func Gallery(r *http.Request, site *safari.Site) (templ.Component, bool) {
+	return pages.Gallery(site), true
+}
