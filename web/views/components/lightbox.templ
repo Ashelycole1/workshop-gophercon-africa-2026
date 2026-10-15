@@ -1,0 +1,25 @@
+package components
+
+templ Lightbox() {
+	<dialog id="lightbox" class="lightbox" aria-label="Photo viewer">
+		<figure class="lightbox__figure">
+			<img class="lightbox__image" alt=""/>
+			<figcaption class="lightbox__caption">
+				<span class="lightbox__text"></span>
+				<span class="lightbox__credit"></span>
+				<span class="lightbox__count" aria-live="polite"></span>
+			</figcaption>
+		</figure>
+		<button class="lightbox__btn lightbox__btn--prev" type="button" aria-label="Previous photo">
+			@Icon("caret-left")
+		</button>
+		<button class="lightbox__btn lightbox__btn--next" type="button" aria-label="Next photo">
+			@Icon("caret-right")
+		</button>
+		<form method="dialog">
+			<button class="lightbox__btn lightbox__btn--close" aria-label="Close the photo viewer">
+				@Icon("x")
+			</button>
+		</form>
+	</dialog>
+}

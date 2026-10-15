@@ -2,6 +2,7 @@ package pages
 
 import (
 	"strconv"
+	"strings"
 	"time"
 	"workshop/internal/domain/sighting"
 	"workshop/web/safari"
@@ -42,4 +43,32 @@ func spotters(site *safari.Site) int {
 // itoa is strconv.Itoa, short for templates.
 func itoa(n int) string {
 	return strconv.Itoa(n)
+}
+
+// topNames lists the first n names of a tally, joined for reading.
+func topNames(rows []sighting.Tally, n int) string {
+	var names []string
+	for i, r := range rows {
+		if i == n {
+			break
+		}
+		names = append(names, r.Name)
+	}
+	return strings.Join(names, ", ")
+}
+
+// animalTip points at where an animal was last seen.
+func animalTip(a safari.Animal) string {
+	if len(a.Sightings) == 0 {
+		return ""
+	}
+	return "Psst, the latest one was spotted in " + safari.Place(a.Sightings[0]) + "!"
+}
+
+// countriesTip cheers on the busiest country and its nearest rival.
+func countriesTip(site *safari.Site) string {
+	if len(site.Countries) < 2 {
+		return ""
+	}
+	return site.Countries[0].Name + " is winning today. Can " + site.Countries[1].Name + " catch up?"
 }

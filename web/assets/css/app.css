@@ -598,7 +598,8 @@ a:hover { color: var(--accent-text); }
 
 /* Flat Africa map (also the 3D map's fallback). */
 
-.africa-map { display: block; width: 100%; height: auto; overflow: visible; }
+.africa-map { display: block; width: 100%; height: auto; overflow: hidden; }
+.africa-map__land path, .africa-map__dots circle { vector-effect: non-scaling-stroke; }
 .africa-map__land path { fill: var(--sand-300); stroke: var(--bg); stroke-width: 1.2; stroke-linejoin: round; }
 .africa-map__land path.is-highlight { fill: var(--sun-600); }
 .africa-map__dots circle { fill: var(--ember-600); stroke: var(--sand-50); stroke-width: 1.5; }
@@ -610,3 +611,7 @@ a:hover { color: var(--accent-text); }
 	.for-mouse { display: none; }
 	.for-touch { display: inline; }
 }
+
+/* A photo that fails to load shows its alt text quietly, not as a link. */
+.card__photo, .tile, .spot__photo, .fieldlog__hero, .peeker a { text-decoration: none; }
+img { font-size: .8rem; color: var(--muted); font-style: italic; }

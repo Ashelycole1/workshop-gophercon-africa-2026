@@ -104,6 +104,7 @@ templ Base(props BaseProps) {
 				</div>
 			</footer>
 			@gopher(props.Tip)
+			@components.Lightbox()
 			<script src="/assets/js/app.js" defer></script>
 			for _, src := range props.Scripts {
 				<script src={ src } defer></script>

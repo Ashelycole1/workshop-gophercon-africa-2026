@@ -1,0 +1,40 @@
+/* Photo viewer: a native <dialog>, so focus and Esc come for free. */
+
+.lightbox {
+	width: 100vw; height: 100dvh; max-width: none; max-height: none;
+	margin: 0; padding: 0; border: 0;
+	background: transparent; color: var(--sand-50);
+}
+.lightbox::backdrop { background: rgb(14 9 4 / .92); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+.lightbox[open] { display: grid; place-items: center; animation: lb-in .3s var(--ease); }
+@keyframes lb-in { from { opacity: 0; } }
+.lightbox__figure { margin: 0; display: grid; justify-items: center; gap: 14px; padding: 64px 72px 24px; max-width: 100%; }
+.lightbox__image {
+	max-width: min(1100px, 100%); max-height: calc(100dvh - 190px);
+	width: auto; height: auto; object-fit: contain;
+	border-radius: 14px; box-shadow: 0 30px 80px rgb(0 0 0 / .6);
+	opacity: 0; transform: scale(.97);
+	transition: opacity .3s var(--ease), transform .4s var(--spring);
+}
+.lightbox__image.is-in { opacity: 1; transform: none; }
+.lightbox__caption { display: grid; justify-items: center; gap: 2px; text-align: center; max-width: 68ch; }
+.lightbox__text { font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; }
+.lightbox__credit, .lightbox__count { font-size: var(--text-small); color: var(--sand-300); }
+.lightbox__btn {
+	position: fixed; width: 52px; height: 52px; display: grid; place-items: center;
+	border-radius: 50%; border: 1.5px solid rgb(251 244 230 / .35);
+	background: rgb(251 244 230 / .1); color: var(--sand-50); cursor: pointer;
+	transition: background-color .2s, transform .2s var(--spring);
+}
+.lightbox__btn:hover { background: rgb(251 244 230 / .22); transform: scale(1.06); }
+.lightbox__btn .icon { width: 24px; height: 24px; }
+.lightbox__btn[hidden] { display: none; }
+.lightbox__btn--prev { left: 14px; top: 50%; translate: 0 -50%; }
+.lightbox__btn--next { right: 14px; top: 50%; translate: 0 -50%; }
+.lightbox__btn--close { right: 14px; top: 14px; }
+@media (max-width: 640px) {
+	.lightbox__figure { padding: 64px 12px 90px; }
+	.lightbox__btn--prev, .lightbox__btn--next { top: auto; bottom: 18px; translate: none; }
+	.lightbox__btn--prev { left: calc(50% - 64px); }
+	.lightbox__btn--next { right: calc(50% - 64px); }
+}

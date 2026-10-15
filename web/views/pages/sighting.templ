@@ -1,0 +1,189 @@
+package pages
+
+import (
+	"workshop/internal/domain/sighting"
+	"workshop/web/safari"
+	"workshop/web/views/components"
+	"workshop/web/views/layout"
+)
+
+type SightingProps struct {
+	Sighting sighting.Sighting
+	Animal   safari.Animal
+	Related  []sighting.Sighting
+	Newer    *sighting.Sighting
+	Older    *sighting.Sighting
+}
+
+templ Sighting(p SightingProps) {
+	@layout.Base(layout.BaseProps{
+		Title:       safari.AnimalName(p.Sighting.Species) + " in " + safari.Place(p.Sighting),
+		Description: safari.AnimalName(p.Sighting.Species) + " spotted by " + safari.Spotter(p.Sighting) + " in " + safari.FullPlace(p.Sighting) + " on " + safari.Date(p.Sighting) + ".",
+		Page:        "sightings",
+		Tip:         "Psst, this one was spotted in " + safari.Place(p.Sighting) + "!",
+		Styles:      []string{"/assets/css/detail.css", "/assets/css/lightbox.css"},
+		Scripts:     []string{"/assets/js/lightbox.js"},
+	}) {
+		<div class="wrap">
+			@components.Crumbs(
+				components.Crumb{Label: "Sightings", Href: "/sightings/"},
+				components.Crumb{Label: p.Animal.Name, Href: "/animals/" + p.Animal.Slug},
+				components.Crumb{Label: safari.Place(p.Sighting)},
+			)
+			<article class="fieldlog">
+				<div class="fieldlog__media">
+					if photos := safari.Photos(p.Sighting); len(photos) > 0 {
+						<a class="fieldlog__hero" href={ templ.SafeURL(safari.Sized(photos[0].URL, "large")) } data-lightbox="sighting" data-caption={ safari.Alt(p.Sighting) } data-credit={ safari.Credit(photos[0]) }>
+							<img src={ safari.Sized(photos[0].URL, "large") } alt={ safari.Alt(p.Sighting) } width="1024" height="768"/>
+							<span class="fieldlog__zoom">
+								@components.Icon("arrows-out")
+								<span class="sr-only">Open the photo full size</span>
+							</span>
+						</a>
+						if credit := safari.Credit(photos[0]); credit != "" {
+							<p class="fieldlog__credit">
+								@components.Icon("camera")
+								<span>{ credit }</span>
+							</p>
+						}
+						if len(photos) > 1 {
+							<ul class="fieldlog__more" role="list">
+								for _, m := range photos[1:] {
+									<li>
+										<a href={ templ.SafeURL(safari.Sized(m.URL, "large")) } data-lightbox="sighting" data-caption={ safari.Alt(p.Sighting) } data-credit={ safari.Credit(m) }>
+											<img src={ safari.Sized(m.URL, "small") } alt={ "Another photo of the " + safari.AnimalName(p.Sighting.Species) } loading="lazy" width="240" height="180"/>
+										</a>
+									</li>
+								}
+							</ul>
+						}
+					} else {
+						<div class="fieldlog__nophoto">
+							@components.Icon("paw-print")
+							<p>No photo for this one. Just the memory.</p>
+						</div>
+					}
+				</div>
+				<div class="fieldlog__notes">
+					<h1 class="fieldlog__title">{ safari.AnimalName(p.Sighting.Species) }</h1>
+					if p.Sighting.Species.ScientificName != "" {
+						<p class="fieldlog__latin">{ p.Sighting.Species.ScientificName }</p>
+					}
+					<dl class="log">
+						<div>
+							<dt>Seen</dt>
+							<dd><time datetime={ safari.ISODate(p.Sighting) }>{ safari.LongDate(p.Sighting) }</time></dd>
+						</div>
+						<div>
+							<dt>Where</dt>
+							<dd>
+								{ safari.FullPlace(p.Sighting) }
+								<br/>
+								<span class="log__small">{ safari.Coords(p.Sighting) }</span>
+								if precision := safari.Precision(p.Sighting); precision != "" {
+									<span class="log__small">, { precision }</span>
+								}
+							</dd>
+						</div>
+						if elevation := safari.Elevation(p.Sighting); elevation != "" {
+							<div>
+								<dt>Height</dt>
+								<dd>{ elevation }</dd>
+							</div>
+						}
+						if count := safari.Count(p.Sighting); count != "" {
+							<div>
+								<dt>How many</dt>
+								<dd>{ count }</dd>
+							</div>
+						}
+						<div>
+							<dt>Spotted by</dt>
+							<dd>{ safari.Spotter(p.Sighting) }</dd>
+						</div>
+						if basis := safari.Basis(p.Sighting); basis != "" {
+							<div>
+								<dt>Record</dt>
+								<dd>{ basis }</dd>
+							</div>
+						}
+					</dl>
+					if sky, ok := safari.Weather(p.Sighting); ok {
+						<div class={ "sky", "sky--" + sky.Kind }>
+							<div class="sky__main">
+								@components.Icon(sky.Icon)
+								<p class="sky__temp">{ sky.Temp }</p>
+								<p class="sky__word">{ sky.Word }</p>
+							</div>
+							<ul class="sky__facts" role="list">
+								<li>
+									@components.Icon("thermometer")
+									<span>Felt like { sky.Feels }</span>
+								</li>
+								<li>
+									@components.Icon("wind")
+									<span>{ sky.Wind }</span>
+								</li>
+								<li>
+									@components.Icon("drop")
+									<span>{ sky.Humidity } humidity</span>
+								</li>
+							</ul>
+							<p class="sky__verdict">
+								<strong>Safari-ready?</strong> { sky.Verdict }.
+							</p>
+						</div>
+					}
+					<p class="fieldlog__fact">{ p.Animal.Fact }</p>
+					if p.Sighting.Remarks != "" {
+						<blockquote class="fieldlog__remarks">
+							<p>{ p.Sighting.Remarks }</p>
+							<footer>{ safari.Spotter(p.Sighting) }, in the field</footer>
+						</blockquote>
+					}
+					<div class="fieldlog__map">
+						@components.AfricaMap([]sighting.Sighting{ p.Sighting }, p.Sighting.Location.CountryCode.String(), safari.MapView(p.Sighting), "Where in "+safari.CountryName(p.Sighting)+" this sighting was made")
+					</div>
+					<p class="fieldlog__links">
+						<a class="btn btn--ghost btn--small" href={ templ.SafeURL("/animals/" + p.Animal.Slug) }>
+							@components.Icon("paw-print")
+							<span>All { p.Animal.Name } sightings</span>
+						</a>
+						<a class="btn btn--ghost btn--small" href={ templ.SafeURL(safari.CountryURL(p.Sighting)) }>
+							@components.Icon("globe-hemisphere-east")
+							<span>More in { safari.CountryName(p.Sighting) }</span>
+						</a>
+						if p.Sighting.ReferenceURL != "" {
+							<a class="btn btn--ghost btn--small" href={ templ.URL(p.Sighting.ReferenceURL) } rel="noopener">
+								@components.Icon("arrow-up-right")
+								<span>Original record</span>
+							</a>
+						}
+					</p>
+				</div>
+			</article>
+			<nav class="pager" aria-label="Newer and older sightings">
+				if p.Newer != nil {
+					<a class="pager__link pager__link--prev" href={ templ.SafeURL(safari.SightingURL(*p.Newer)) } rel="prev">
+						@components.Icon("arrow-left")
+						<span><small>Newer</small>{ safari.AnimalName(p.Newer.Species) }</span>
+					</a>
+				}
+				if p.Older != nil {
+					<a class="pager__link pager__link--next" href={ templ.SafeURL(safari.SightingURL(*p.Older)) } rel="next">
+						<span><small>Older</small>{ safari.AnimalName(p.Older.Species) }</span>
+						@components.Icon("arrow-right")
+					</a>
+				}
+			</nav>
+			if len(p.Related) > 0 {
+				<section class="section" aria-labelledby="related-title">
+					<div class="section__head">
+						<h2 id="related-title">You might also spot</h2>
+					</div>
+					@components.SightingGrid(p.Related)
+				</section>
+			}
+		</div>
+	}
+}

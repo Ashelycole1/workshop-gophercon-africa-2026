@@ -1,0 +1,160 @@
+package pages
+
+import (
+	"workshop/web/safari"
+	"workshop/web/views/components"
+	"workshop/web/views/layout"
+)
+
+templ Animals(site *safari.Site) {
+	@layout.Base(layout.BaseProps{
+		Title:       "Animals",
+		Description: "Every kind of animal spotted on the safari, from hippos to shoebills.",
+		Page:        "animals",
+		Tip:         "Hover a tile to wake the animal up.",
+		Styles:      []string{"/assets/css/detail.css"},
+	}) {
+		<div class="wrap">
+			<header class="page-head">
+				<h1>Animals</h1>
+				<p class="page-head__lede">{ itoa(len(site.Animals)) } kinds of animal, most-seen first. Each tile leads to every sighting of it.</p>
+				<div class="kente" aria-hidden="true"></div>
+			</header>
+			<ul class="tiles" role="list">
+				for _, a := range site.Animals {
+					<li class="reveal">
+						<a class="tile" href={ templ.SafeURL("/animals/" + a.Slug) } data-tilt>
+							if cover, ok := safari.Cover(a.Sightings); ok {
+								<img src={ safari.Thumb(cover) } alt={ safari.Alt(cover) } loading="lazy" width="500" height="625"/>
+							}
+							<span class="tile__shade" aria-hidden="true"></span>
+							<span class="tile__text">
+								<span class="tile__name">{ a.Name }</span>
+								<span class="tile__latin">{ a.Scientific }</span>
+								<span class="tile__count">{ safari.Plural(len(a.Sightings), "sighting") }</span>
+							</span>
+						</a>
+					</li>
+				}
+			</ul>
+		</div>
+	}
+}
+
+templ Animal(site *safari.Site, a safari.Animal) {
+	@layout.Base(layout.BaseProps{
+		Title:       a.Name,
+		Description: a.Name + ": " + safari.Plural(len(a.Sightings), "sighting") + " across Africa. " + a.Fact,
+		Page:        "animals",
+		Tip:         animalTip(a),
+		Styles:      []string{"/assets/css/detail.css"},
+	}) {
+		<div class="wrap">
+			@components.Crumbs(components.Crumb{Label: "Animals", Href: "/animals/"}, components.Crumb{Label: a.Name})
+		</div>
+		<header class="banner">
+			if cover, ok := safari.Cover(a.Sightings); ok {
+				<img class="banner__img" src={ safari.Sized(safari.Photo(cover), "large") } alt={ safari.Alt(cover) } width="1024" height="683"/>
+			}
+			<div class="banner__shade" aria-hidden="true"></div>
+			<div class="banner__text wrap">
+				<h1>{ a.Name }</h1>
+				if a.Scientific != "" {
+					<p class="banner__latin">{ a.Scientific }</p>
+				}
+				<p class="banner__fact">{ a.Fact }</p>
+			</div>
+		</header>
+		<div class="wrap">
+			<section class="facts" aria-label={ "About " + a.Name + " sightings" }>
+				<div class="facts__map">
+					@components.AfricaMap(a.Sightings, "", safari.MapViewBox(), "Where "+a.Name+" sightings were made in Africa")
+				</div>
+				<div class="facts__text">
+					<p class="facts__big">{ safari.Plural(len(a.Sightings), "sighting") }</p>
+					<p>Seen in:</p>
+					<ul class="chips">
+						for _, c := range a.CountriesOf() {
+							<li><a class="chip" href={ templ.SafeURL("/countries/" + safari.Slug(c.Name)) }>{ c.Name } <span class="chip__count">{ itoa(c.Count) }</span></a></li>
+						}
+					</ul>
+				</div>
+			</section>
+			<section class="section" aria-labelledby="all-title">
+				<div class="section__head">
+					<h2 id="all-title">Every { a.Name } sighting</h2>
+				</div>
+				@components.SightingGrid(a.Sightings)
+			</section>
+		</div>
+	}
+}
+
+templ Countries(site *safari.Site) {
+	@layout.Base(layout.BaseProps{
+		Title:       "Countries",
+		Description: "Every African country with a wildlife sighting on the safari.",
+		Page:        "countries",
+		Tip:         countriesTip(site),
+		Styles:      []string{"/assets/css/detail.css"},
+	}) {
+		<div class="wrap">
+			<header class="page-head">
+				<h1>Countries</h1>
+				<p class="page-head__lede">{ itoa(len(site.Countries)) } countries, busiest first. Each outline is drawn from the real border.</p>
+				<div class="kente" aria-hidden="true"></div>
+			</header>
+			<ul class="lands" role="list">
+				for _, c := range site.Countries {
+					<li class="reveal">
+						<a class="land" href={ templ.SafeURL("/countries/" + c.Slug) } data-tilt>
+							@components.Silhouette(c.Code, "land__shape")
+							<span class="land__name">{ c.Name }</span>
+							<span class="land__count">{ safari.Plural(len(c.Sightings), "sighting") }</span>
+							<span class="land__who">{ topNames(c.AnimalsIn(), 3) }</span>
+						</a>
+					</li>
+				}
+			</ul>
+		</div>
+	}
+}
+
+templ Country(site *safari.Site, c safari.Country) {
+	@layout.Base(layout.BaseProps{
+		Title:       c.Name,
+		Description: safari.Plural(len(c.Sightings), "wildlife sighting") + " in " + c.Name + ".",
+		Page:        "countries",
+		Tip:         "Karibu " + c.Name + "! " + safari.Plural(len(c.Sightings), "sighting") + " and counting.",
+		Styles:      []string{"/assets/css/detail.css"},
+	}) {
+		<div class="wrap">
+			@components.Crumbs(components.Crumb{Label: "Countries", Href: "/countries/"}, components.Crumb{Label: c.Name})
+			<section class="facts facts--country" aria-labelledby="country-title">
+				<div class="facts__map">
+					if safari.CountryPath(c.Code) != "" {
+						@components.AfricaMap(c.Sightings, c.Code, safari.CountryViewBox(c.Code), "Map of "+c.Name+" with a dot for each sighting")
+					} else {
+						@components.AfricaMap(c.Sightings, c.Code, safari.MapViewBox(), "Map of Africa with "+c.Name+"'s sightings")
+					}
+				</div>
+				<div class="facts__text">
+					<h1 id="country-title">{ c.Name }</h1>
+					<p class="facts__big">{ safari.Plural(len(c.Sightings), "sighting") }</p>
+					<p>Who lives here:</p>
+					<ul class="chips">
+						for _, t := range c.AnimalsIn() {
+							<li><a class="chip" href={ templ.SafeURL("/animals/" + safari.Slug(t.Name)) }>{ t.Name } <span class="chip__count">{ itoa(t.Count) }</span></a></li>
+						}
+					</ul>
+				</div>
+			</section>
+			<section class="section" aria-labelledby="in-title">
+				<div class="section__head">
+					<h2 id="in-title">Sightings in { c.Name }</h2>
+				</div>
+				@components.SightingGrid(c.Sightings)
+			</section>
+		</div>
+	}
+}

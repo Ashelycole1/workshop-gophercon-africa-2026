@@ -9,12 +9,15 @@ import (
 // Sky is a sighting's weather boiled down for a chip: an icon name, one word, a
 // temperature and whether it was a good day to be out.
 type Sky struct {
-	Icon    string
-	Word    string
-	Temp    string
-	Kind    string
-	Verdict string
-	Detail  string
+	Icon     string
+	Word     string
+	Temp     string
+	Kind     string
+	Verdict  string
+	Detail   string
+	Feels    string
+	Wind     string
+	Humidity string
 }
 
 // Weather returns the sky for a sighting, and false if none was recorded.
@@ -63,6 +66,9 @@ func Weather(s sighting.Sighting) (Sky, bool) {
 		sky.Verdict = "Safari-ready"
 	}
 
+	sky.Feels = fmt.Sprintf("%.0f°C", w.Temperature.Apparent)
+	sky.Wind = fmt.Sprintf("Wind %.0f km/h from the %s", w.Wind.Speed, Compass(w.Wind.Direction))
+	sky.Humidity = fmt.Sprintf("%d%%", w.Humidity)
 	sky.Detail = fmt.Sprintf("%[4]s. Felt like %.0[1]f°C, wind %.0[2]f km/h, humidity %[3]d%%",
 		w.Temperature.Apparent, w.Wind.Speed, w.Humidity, w.Condition.Description)
 

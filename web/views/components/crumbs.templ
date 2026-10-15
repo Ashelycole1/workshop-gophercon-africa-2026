@@ -1,0 +1,23 @@
+package components
+
+type Crumb struct {
+	Label string
+	Href  string
+}
+
+templ Crumbs(items ...Crumb) {
+	<nav class="crumbs" aria-label="Breadcrumb">
+		<ol>
+			<li><a href="/">Safari</a></li>
+			for i, c := range items {
+				<li>
+					if i == len(items)-1 {
+						<span aria-current="page">{ c.Label }</span>
+					} else {
+						<a href={ templ.SafeURL(c.Href) }>{ c.Label }</a>
+					}
+				</li>
+			}
+		</ol>
+	</nav>
+}

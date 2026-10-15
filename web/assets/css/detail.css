@@ -1,0 +1,136 @@
+/* Karibu Safari — sighting, animal and country pages. */
+
+/* The field log: a big photo, then a ranger's notes. */
+
+.fieldlog { display: grid; gap: var(--s-5); padding: var(--s-3) 0 var(--s-5); }
+@media (min-width: 960px) { .fieldlog { grid-template-columns: 7fr 5fr; align-items: start; } }
+.fieldlog__media { display: grid; gap: var(--s-2); }
+@media (min-width: 960px) { .fieldlog__media { position: sticky; top: 96px; } }
+.fieldlog__hero { position: relative; display: block; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-lift); }
+.fieldlog__hero img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; transition: transform .7s var(--ease); }
+.fieldlog__hero:hover img { transform: scale(1.03); }
+.fieldlog__zoom {
+	position: absolute; right: 14px; bottom: 14px;
+	width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%;
+	background: rgb(251 244 230 / .9); color: var(--earth-900);
+}
+.fieldlog__credit { display: flex; align-items: center; gap: 8px; font-size: var(--text-small); color: var(--muted); margin: 0; }
+.fieldlog__more { display: flex; flex-wrap: wrap; gap: var(--s-2); list-style: none; padding: 0; margin: 0; }
+.fieldlog__more a { display: block; width: 104px; border-radius: var(--radius-sm); overflow: hidden; border: 2px solid var(--line); }
+.fieldlog__more img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+.fieldlog__nophoto { display: grid; place-items: center; gap: var(--s-2); aspect-ratio: 4 / 3; border-radius: var(--radius); background: var(--bg-sunk); color: var(--muted); }
+.fieldlog__nophoto .icon { width: 72px; height: 72px; }
+
+.fieldlog__title { font-size: clamp(2.4rem, 5vw, 3.8rem); font-weight: 900; margin-bottom: 4px; letter-spacing: -.025em; }
+.fieldlog__latin { font-family: var(--font-display); font-style: italic; font-size: 1.25rem; color: var(--muted); }
+.fieldlog__fact { font-size: 1.05rem; color: var(--text-soft); border-left: 4px solid var(--kente-gold); padding-left: var(--s-3); margin: var(--s-4) 0; }
+.fieldlog__remarks { margin: 0 0 var(--s-4); padding: var(--s-3) 20px; background: var(--bg-sunk); border-radius: var(--radius-sm); font-family: var(--font-display); font-style: italic; }
+.fieldlog__remarks p { margin-bottom: 6px; }
+.fieldlog__remarks footer { font-family: var(--font-body); font-style: normal; font-size: var(--text-small); color: var(--muted); }
+.fieldlog__map { max-width: 280px; margin: 0 0 var(--s-4); }
+.fieldlog__map { border-radius: var(--radius); background: var(--bg-sunk); }
+.fieldlog__map .africa-map__dots circle { r: 3; fill: var(--gopher); stroke: var(--earth-900); stroke-width: 2.5; }
+.fieldlog__links { display: flex; flex-wrap: wrap; gap: var(--s-2); }
+
+.log { display: grid; margin: var(--s-4) 0; border-top: 1px solid var(--line); }
+.log > div { display: grid; grid-template-columns: 7.5em 1fr; gap: var(--s-3); padding: 10px 0; border-bottom: 1px solid var(--line); }
+.log dt { font-weight: 800; color: var(--muted); }
+.log dd { margin: 0; overflow-wrap: anywhere; }
+.log__small { font-size: var(--text-small); color: var(--muted); font-variant-numeric: tabular-nums; }
+
+/* The weather on the day, as a little sky panel. */
+
+.sky {
+	display: grid; gap: var(--s-3); padding: 20px; border-radius: var(--radius);
+	background: linear-gradient(135deg, #FFE7B8, #FBD08A); color: #4A2A0A;
+}
+.sky--cloud { background: linear-gradient(135deg, #E9ECE4, #CFD6C9); color: #2F3A2B; }
+.sky--rain { background: linear-gradient(135deg, #D7E6F2, #A9C4DC); color: #183A55; }
+.sky--storm { background: linear-gradient(135deg, #DAD2EA, #ADA0CC); color: #2D1D52; }
+.sky--snow, .sky--fog { background: linear-gradient(135deg, #EEF3F6, #D5E0E8); color: #24485F; }
+:root[data-theme="night"] .sky { background: linear-gradient(135deg, #1D2B48, #2A3A5C); color: var(--moon); }
+.sky__main { display: flex; align-items: center; gap: 14px; }
+.sky__main .icon { width: 52px; height: 52px; }
+.sky__temp { font-family: var(--font-display); font-weight: 900; font-size: 2.4rem; line-height: 1; margin: 0; }
+.sky__word { font-weight: 800; font-size: 1.15rem; margin: 0; }
+.sky__facts { display: flex; flex-wrap: wrap; gap: 6px 18px; list-style: none; margin: 0; padding: 0; font-size: .92rem; font-weight: 600; }
+.sky__facts li { display: flex; align-items: center; gap: 6px; }
+.sky__verdict { margin: 0; padding-top: 12px; border-top: 1px solid currentColor; border-color: rgb(0 0 0 / .15); }
+
+/* Newer and older. */
+
+.pager { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-3); margin: var(--s-4) 0; }
+.pager__link {
+	display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 12px 18px;
+	border: 1.5px solid var(--line); border-radius: var(--radius); background: var(--bg-raised);
+	color: var(--text); text-decoration: none; font-family: var(--font-display); font-weight: 800; font-size: 1.1rem;
+	transition: border-color .2s, transform .25s var(--spring);
+}
+.pager__link:hover { border-color: var(--acacia-500); color: var(--text); transform: translateY(-2px); }
+.pager__link small { display: block; font-family: var(--font-body); font-size: .8rem; color: var(--muted); font-weight: 700; }
+.pager__link--next { grid-column: 2; justify-content: flex-end; text-align: right; }
+.pager__link .icon { width: 22px; height: 22px; flex: none; }
+
+/* Animal tiles. */
+
+.tiles {
+	display: grid; gap: var(--s-3);
+	grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr));
+	list-style: none; padding: 0; margin: 0;
+}
+.tile {
+	position: relative; display: block; aspect-ratio: 4 / 5; overflow: hidden;
+	border-radius: var(--radius); background: var(--sand-300); color: var(--sand-50);
+	text-decoration: none; box-shadow: var(--shadow);
+	transition: transform .35s var(--ease), box-shadow .35s var(--ease);
+}
+.tile img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: saturate(.85); transition: transform .8s var(--ease), filter .4s; }
+.tile:hover img { transform: scale(1.08); filter: saturate(1.1); }
+.tile:hover { box-shadow: var(--shadow-lift); color: var(--sand-50); }
+.tile__shade { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 40%, rgb(27 18 8 / .88)); }
+.tile__text { position: absolute; left: 0; right: 0; bottom: 0; display: grid; padding: 16px 18px; transform: translateZ(30px); }
+.tile__name { font-family: var(--font-display); font-weight: 900; font-size: 1.4rem; line-height: 1.1; }
+.tile__latin { font-family: var(--font-display); font-style: italic; font-size: .9rem; opacity: .85; }
+.tile__count { margin-top: 6px; font-size: .82rem; font-weight: 800; color: var(--kente-gold); }
+
+/* Animal banner. */
+
+.banner { position: relative; min-height: clamp(320px, 52vh, 560px); display: flex; align-items: flex-end; margin-bottom: var(--s-5); color: var(--sand-50); overflow: hidden; }
+.banner__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; animation: banner-zoom 18s ease-out both; }
+@keyframes banner-zoom { from { transform: scale(1.12); } }
+.banner__shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgb(27 18 8 / .1) 20%, rgb(27 18 8 / .85)); }
+.banner__text { position: relative; padding-bottom: var(--s-5); }
+.banner h1 { font-size: clamp(2.8rem, 7vw, 5.5rem); font-weight: 900; margin-bottom: 4px; letter-spacing: -.03em; }
+.banner__latin { font-family: var(--font-display); font-style: italic; font-size: 1.3rem; color: var(--sand-300); }
+.banner__fact { max-width: 56ch; font-size: 1.1rem; margin: 0; }
+
+/* Map beside the facts. */
+
+.facts { display: grid; gap: var(--s-5); align-items: center; padding: var(--s-3) 0 var(--s-4); }
+@media (min-width: 900px) { .facts { grid-template-columns: 5fr 7fr; } }
+.facts__map { max-width: 460px; width: 100%; margin-inline: auto; }
+.facts__big { font-family: var(--font-display); font-weight: 900; font-size: clamp(2rem, 4vw, 3rem); line-height: 1; margin-bottom: var(--s-3); color: var(--accent-text); }
+.facts--country h1 { font-size: clamp(2.6rem, 6vw, 4.5rem); font-weight: 900; margin-bottom: var(--s-2); }
+.facts--country .africa-map__dots circle { r: 1.8; }
+.facts__map .africa-map { border-radius: var(--radius); }
+.facts .chips a { min-height: 40px; }
+
+/* Country tiles: the outline is the picture. */
+
+.lands {
+	display: grid; gap: var(--s-3);
+	grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr));
+	list-style: none; padding: 0; margin: 0;
+}
+.land {
+	display: grid; gap: 4px; padding: 20px; height: 100%;
+	border-radius: var(--radius); border: 1px solid var(--line); background: var(--bg-raised);
+	color: var(--text); text-decoration: none; box-shadow: var(--shadow);
+	transition: transform .35s var(--ease), box-shadow .35s var(--ease);
+}
+.land:hover { color: var(--text); box-shadow: var(--shadow-lift); }
+.land__shape { width: 100%; height: 150px; margin-bottom: var(--s-2); fill: var(--sun-600); filter: drop-shadow(0 6px 0 var(--ember-600)); transition: transform .5s var(--spring); }
+.land:hover .land__shape { transform: translateY(-6px) rotate(-3deg); }
+.land__name { font-family: var(--font-display); font-weight: 900; font-size: 1.35rem; }
+.land__count { font-weight: 800; color: var(--accent-text); font-size: .95rem; }
+.land__who { color: var(--muted); font-size: .88rem; }
