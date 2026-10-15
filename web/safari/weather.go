@@ -14,6 +14,7 @@ type Sky struct {
 	Temp     string
 	Kind     string
 	Verdict  string
+	Ready    bool
 	Detail   string
 	Feels    string
 	Wind     string
@@ -63,7 +64,7 @@ func Weather(s sighting.Sighting) (Sky, bool) {
 	case w.Wind.Speed > 35:
 		sky.Verdict = "Hold on to your hat"
 	default:
-		sky.Verdict = "Safari-ready"
+		sky.Verdict, sky.Ready = "Safari-ready", true
 	}
 
 	sky.Feels = fmt.Sprintf("%.0f°C", w.Temperature.Apparent)

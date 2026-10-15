@@ -1,6 +1,7 @@
 package pages
 
 import (
+	"strings"
 	"workshop/internal/domain/sighting"
 	"workshop/web/safari"
 	"workshop/web/views/components"
@@ -130,7 +131,12 @@ templ Sighting(p SightingProps) {
 								</li>
 							</ul>
 							<p class="sky__verdict">
-								<strong>Safari-ready?</strong> { sky.Verdict }.
+								<strong>Safari-ready?</strong>
+								if sky.Ready {
+									Yes, a perfect day for it.
+								} else {
+									Not quite: { strings.ToLower(sky.Verdict) }.
+								}
 							</p>
 						</div>
 					}

@@ -12,6 +12,12 @@
 	var count = form.querySelector(".atlas__count");
 	var reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+	// The panel starts closed on phones so the map gets the screen; close it
+	// before the map measures itself.
+	if (matchMedia("(max-width: 899px)").matches && !location.search) {
+		form.querySelector("details").open = false;
+	}
+
 	var map = L.map(el, { zoomSnap: 0.5, worldCopyJump: false, minZoom: 2 });
 	var africa = L.latLngBounds([[-36, -19], [38, 52]]);
 	map.fitBounds(africa);
@@ -197,9 +203,5 @@
 	form.addEventListener("submit", function (e) { e.preventDefault(); });
 	apply(location.search !== "");
 
-	// The panel starts closed on phones so the map gets the screen.
-	if (matchMedia("(max-width: 899px)").matches && !location.search) {
-		form.querySelector("details").open = false;
-	}
-	setTimeout(function () { map.invalidateSize(); }, 0);
+	form.querySelector("details").addEventListener("toggle", function () { map.invalidateSize(); });
 })();
