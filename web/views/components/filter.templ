@@ -9,7 +9,9 @@ templ Filter(site *safari.Site) {
 	<form class="filter" data-filter="sightings" role="search" hidden>
 		<label class="filter__search">
 			<span class="sr-only">Search by animal, place or spotter</span>
-			<span class="filter__search-icon" aria-hidden="true">🔎</span>
+			<span class="filter__search-icon">
+				@Icon("magnifying-glass")
+			</span>
 			<input type="search" name="q" placeholder="Search animals, places, spotters" autocomplete="off"/>
 		</label>
 		<fieldset class="filter__group">
@@ -18,7 +20,8 @@ templ Filter(site *safari.Site) {
 				for _, a := range topAnimals(site, 12) {
 					<label class="chip chip--check">
 						<input type="checkbox" name="animal" value={ a.Slug }/>
-						<span aria-hidden="true">{ a.Emoji }</span> { a.Name } <span class="chip__count">{ strconv.Itoa(len(a.Sightings)) }</span>
+						<span>{ a.Name }</span>
+						<span class="chip__count">{ strconv.Itoa(len(a.Sightings)) }</span>
 					</label>
 				}
 			</div>

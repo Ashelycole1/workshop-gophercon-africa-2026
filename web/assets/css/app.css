@@ -114,6 +114,11 @@
 	color-scheme: dark;
 }
 
+/* Icons: Phosphor, regular weight, one size scale */
+
+.icon { width: 1.15em; height: 1.15em; flex: none; display: inline-block; vertical-align: -.2em; }
+.theme-toggle .icon, .nav-toggle .icon { width: 22px; height: 22px; }
+
 /* Base */
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -216,7 +221,7 @@ a:hover { color: var(--accent-text); }
 
 .site-nav ul { display: flex; gap: 2px; list-style: none; margin: 0; padding: 0; }
 .site-nav a {
-	display: flex; align-items: center; min-height: 44px; padding: 0 12px;
+	display: flex; align-items: center; gap: 7px; min-height: 44px; padding: 0 12px;
 	border-radius: 999px; text-decoration: none; color: var(--text);
 	font-weight: 700; font-size: .95rem;
 	transition: background-color .2s var(--ease), color .2s var(--ease);
@@ -230,7 +235,7 @@ a:hover { color: var(--accent-text); }
 	display: grid; place-items: center;
 	border-radius: 50%; border: 1.5px solid var(--line);
 	background: var(--bg-raised); color: var(--text);
-	cursor: pointer; font-size: 1.15rem;
+	cursor: pointer;
 	transition: transform .3s var(--spring), border-color .2s;
 }
 .theme-toggle:hover, .nav-toggle:hover { transform: rotate(-15deg) scale(1.06); border-color: var(--accent-text); }
@@ -389,16 +394,8 @@ a:hover { color: var(--accent-text); }
 	transition: transform .7s var(--ease);
 }
 .card:hover .card__photo img { transform: scale(1.06); }
-.card__nophoto { display: grid; place-items: center; height: 100%; font-size: 4rem; }
-.card__badge {
-	position: absolute; right: 12px; bottom: 12px;
-	width: 44px; height: 44px; display: grid; place-items: center;
-	border-radius: 50%; font-size: 1.4rem;
-	background: var(--sand-50); border: 2px solid var(--acacia-700);
-	box-shadow: 0 4px 10px rgb(0 0 0 / .2);
-	transition: transform .4s var(--spring);
-}
-.card:hover .card__badge { transform: rotate(-12deg) scale(1.12); }
+.card__nophoto { display: grid; place-items: center; height: 100%; color: var(--earth-600); }
+.card__nophoto .icon { width: 64px; height: 64px; }
 .card__body { display: flex; flex-direction: column; gap: 4px; padding: var(--s-3) 20px 20px; flex: 1; }
 .card__title { font-size: 1.35rem; margin: 0; }
 .card__title a { color: var(--text); text-decoration: none; }
@@ -406,7 +403,9 @@ a:hover { color: var(--accent-text); }
 .card__title a:focus-visible { outline: none; }
 .card:has(.card__title a:focus-visible) { outline: 3px solid var(--gopher); outline-offset: 3px; }
 .card__scientific { font-family: var(--font-display); font-style: italic; color: var(--muted); margin: 0 0 var(--s-2); }
-.card__meta { list-style: none; padding: 0; margin: 0 0 var(--s-2); font-size: .92rem; color: var(--text-soft); display: grid; gap: 2px; }
+.card__meta { list-style: none; padding: 0; margin: 0 0 var(--s-2); font-size: .92rem; color: var(--text-soft); display: grid; gap: 4px; }
+.card__meta li { display: flex; align-items: flex-start; gap: 8px; }
+.card__meta .icon { margin-top: .2em; color: var(--earth-600); }
 .card .wx { margin-top: auto; position: relative; z-index: 2; }
 
 /* Weather chip */
@@ -419,7 +418,7 @@ a:hover { color: var(--accent-text); }
 	background: #FDF0D2; color: #6B3E10; border: 1px solid #F1D39A;
 	cursor: help;
 }
-.wx__icon { font-size: 1.05rem; }
+.wx .icon { width: 18px; height: 18px; }
 .wx__temp { font-variant-numeric: tabular-nums; }
 .wx__word { font-weight: 600; }
 .wx__verdict { padding-left: 8px; border-left: 1px solid currentColor; font-weight: 800; opacity: .9; }
@@ -569,7 +568,8 @@ a:hover { color: var(--accent-text); }
 }
 .filter[hidden] { display: none; }
 .filter__search { position: relative; display: block; }
-.filter__search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+.filter__search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); pointer-events: none; display: flex; color: var(--muted); }
+.filter__search-icon .icon { width: 20px; height: 20px; }
 .filter__search input {
 	width: 100%; min-height: 52px; padding: 0 18px 0 46px;
 	border: 1.5px solid var(--line); border-radius: 999px;
@@ -592,3 +592,21 @@ a:hover { color: var(--accent-text); }
 
 .silhouette { width: 1.2em; height: 1.2em; flex: none; fill: currentColor; overflow: visible; }
 .silhouette--dot { display: inline-grid; place-items: center; font-size: .6em; }
+
+.site-nav .icon { width: 18px; height: 18px; opacity: .8; }
+@media (min-width: 1081px) and (max-width: 1240px) { .site-nav .icon { display: none; } }
+
+/* Flat Africa map (also the 3D map's fallback). */
+
+.africa-map { display: block; width: 100%; height: auto; overflow: visible; }
+.africa-map__land path { fill: var(--sand-300); stroke: var(--bg); stroke-width: 1.2; stroke-linejoin: round; }
+.africa-map__land path.is-highlight { fill: var(--sun-600); }
+.africa-map__dots circle { fill: var(--ember-600); stroke: var(--sand-50); stroke-width: 1.5; }
+:root[data-theme="night"] .africa-map__land path { fill: #2A3A5C; }
+:root[data-theme="night"] .africa-map__dots circle { fill: var(--kente-gold); stroke: var(--night-900); }
+
+.for-touch { display: none; }
+@media (hover: none) {
+	.for-mouse { display: none; }
+	.for-touch { display: inline; }
+}

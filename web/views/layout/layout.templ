@@ -1,11 +1,14 @@
 package layout
 
+import "workshop/web/views/components"
+
 type BaseProps struct {
 	Title       string
 	Description string
 	Page        string
 	Tip         string
 	Scripts     []string
+	Modules     []string
 	Styles      []string
 }
 
@@ -59,14 +62,21 @@ templ Base(props BaseProps) {
 										if item.Page == props.Page {
 											aria-current="page"
 										}
-									>{ item.Label }</a>
+									>
+										@components.Icon(item.Icon)
+										<span>{ item.Label }</span>
+									</a>
 								</li>
 							}
 						</ul>
 					</nav>
 					<button class="theme-toggle" type="button" aria-label="Switch to night safari" title="Day / night safari">
-						<span class="theme-toggle__sun" aria-hidden="true">☀️</span>
-						<span class="theme-toggle__moon" aria-hidden="true">🌙</span>
+						<span class="theme-toggle__sun">
+							@components.Icon("sun")
+						</span>
+						<span class="theme-toggle__moon">
+							@components.Icon("moon")
+						</span>
 					</button>
 				</div>
 				<div class="kente" aria-hidden="true"></div>
@@ -89,7 +99,7 @@ templ Base(props BaseProps) {
 					<p class="site-footer__small">
 						Sightings from <a href="https://www.gbif.org" rel="noopener">GBIF</a>,
 						weather from <a href="https://open-meteo.com" rel="noopener">Open-Meteo</a>.
-						Built in Go with templ for GopherCon Africa 2026, Nairobi. 🇰🇪
+						Built in Go with templ for GopherCon Africa 2026, Nairobi.
 					</p>
 				</div>
 			</footer>
@@ -97,6 +107,9 @@ templ Base(props BaseProps) {
 			<script src="/assets/js/app.js" defer></script>
 			for _, src := range props.Scripts {
 				<script src={ src } defer></script>
+			}
+			for _, src := range props.Modules {
+				<script type="module" src={ src }></script>
 			}
 		</body>
 	</html>
@@ -106,7 +119,7 @@ templ gopher(tip string) {
 	<aside class="gopher" data-tip={ tip } aria-label="Gopher guide">
 		<div class="gopher__bubble" role="dialog" aria-modal="false" aria-labelledby="gopher-say" hidden>
 			<button class="gopher__close" type="button" aria-label="Close the gopher's message">×</button>
-			<p id="gopher-say" class="gopher__say">Karibu! Welcome to GopherCon Africa 🌍</p>
+			<p id="gopher-say" class="gopher__say">Karibu! Welcome to GopherCon Africa.</p>
 			<div class="gopher__actions">
 				<a class="btn btn--primary btn--small" href="/map/" data-gopher-start>Start the safari</a>
 				<button class="btn btn--ghost btn--small" type="button" data-gopher-later>Maybe later</button>

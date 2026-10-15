@@ -1,0 +1,280 @@
+/* Karibu Safari — the landing page. */
+
+/* Hero: golden hour, deepening to dusk as you scroll (--dusk 0..1). */
+
+.hero {
+	--dusk: 0;
+	position: relative;
+	isolation: isolate;
+	min-height: min(calc(100svh - 78px), 920px);
+	display: flex; flex-direction: column;
+	overflow: hidden;
+	color: var(--earth-900);
+}
+.hero__sky, .hero__sky::after { position: absolute; inset: 0; z-index: -3; }
+.hero__sky {
+	background: linear-gradient(180deg, #FCE8C8 0%, #F9D29A 38%, #F5B25A 66%, #EE8A3C 86%, #D9682B 100%);
+}
+.hero__sky::after {
+	content: "";
+	background: linear-gradient(180deg, #3D2A57 0%, #8C4A6E 45%, #E0774A 85%, #C4532A 100%);
+	opacity: calc(var(--dusk) * .85);
+}
+.hero__sun {
+	position: absolute; z-index: -2;
+	width: clamp(220px, 30vw, 420px); aspect-ratio: 1;
+	right: 6%; top: calc(14% + var(--dusk) * 22%);
+	border-radius: 50%;
+	background: radial-gradient(circle, #FFF6DC 0%, #FFE09A 38%, rgb(255 196 92 / .65) 60%, rgb(255 170 70 / 0) 72%);
+	filter: blur(1px);
+	animation: sun-breathe 9s ease-in-out infinite;
+}
+@keyframes sun-breathe { 50% { transform: scale(1.04); } }
+
+:root[data-theme="night"] .hero { color: var(--sand-50); }
+:root[data-theme="night"] .hero__sky { background: linear-gradient(180deg, #050913 0%, #0B1220 45%, #16223A 80%, #24314F 100%); }
+:root[data-theme="night"] .hero__sky::after {
+	opacity: 1;
+	background:
+		radial-gradient(1.5px 1.5px at 12% 18%, #fff 50%, transparent 51%),
+		radial-gradient(1px 1px at 28% 42%, #fff 50%, transparent 51%),
+		radial-gradient(1.5px 1.5px at 46% 12%, #fff 50%, transparent 51%),
+		radial-gradient(1px 1px at 64% 30%, #fff 50%, transparent 51%),
+		radial-gradient(2px 2px at 82% 14%, #fff 50%, transparent 51%),
+		radial-gradient(1px 1px at 90% 52%, #fff 50%, transparent 51%);
+	background-size: 360px 300px;
+}
+:root[data-theme="night"] .hero__sun {
+	background: radial-gradient(circle, #FFFBEA 0%, var(--moon) 30%, rgb(244 235 193 / .25) 52%, transparent 66%);
+	width: clamp(140px, 18vw, 240px); right: 12%; top: 12%;
+}
+
+.hero__grid {
+	flex: 1;
+	display: grid; align-items: center; gap: var(--s-3);
+	grid-template-columns: 1fr;
+	padding-top: var(--s-5);
+}
+@media (min-width: 960px) {
+	.hero__grid { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 0; padding-top: 0; }
+}
+
+.hero__copy { position: relative; z-index: 2; padding-bottom: var(--s-4); }
+.hero__where { font-weight: 800; margin-bottom: var(--s-3); color: var(--ember-600); }
+:root[data-theme="night"] .hero__where { color: var(--kente-gold); }
+
+.hero__title {
+	font-size: var(--text-hero);
+	line-height: .92;
+	letter-spacing: -.035em;
+	margin-bottom: var(--s-4);
+}
+.hero__karibu { display: block; font-weight: 900; font-size: 1.25em; }
+.hero__letter {
+	display: inline-block;
+	animation: letter-rise .9s var(--spring) both;
+	animation-delay: calc(var(--i) * 55ms + 150ms);
+}
+@keyframes letter-rise { from { opacity: 0; transform: translateY(.6em) rotate(8deg); } }
+.hero__line {
+	display: block; font-weight: 700; font-size: .5em; letter-spacing: -.02em; line-height: 1.08;
+	animation: line-in .8s var(--ease) both;
+}
+.hero__line:nth-of-type(2) { animation-delay: .65s; }
+.hero__line:nth-of-type(3) { animation-delay: .8s; }
+@keyframes line-in { from { opacity: 0; transform: translateY(12px); } }
+
+.hero__lede { font-size: 1.15rem; max-width: 44ch; color: inherit; opacity: .88; margin-bottom: var(--s-4); }
+.hero__ctas { display: flex; flex-wrap: wrap; gap: 12px; }
+.hero .btn--ghost { color: inherit; }
+.hero .btn--ghost:hover { background: rgb(255 255 255 / .35); }
+:root[data-theme="night"] .hero .btn--ghost:hover { background: rgb(255 255 255 / .1); }
+
+/* The 3D stage. */
+
+.a3d {
+	position: relative;
+	height: clamp(380px, 62vh, 760px);
+	margin-inline: calc(var(--gutter) * -1);
+}
+@media (min-width: 960px) {
+	.a3d { height: min(calc(100svh - 78px), 900px); margin-inline: 0 calc((100vw - min(var(--max), 100vw - 2 * var(--gutter))) / -2); }
+}
+.a3d__stage { position: absolute; inset: 0; }
+.a3d__canvas { display: block; width: 100%; height: 100%; touch-action: pan-y; cursor: grab; }
+.a3d.is-dragging .a3d__canvas, .is-dragging .a3d__canvas { cursor: grabbing; }
+
+.is-3d .africa-map { display: none; }
+.a3d__stage .africa-map { width: 100%; height: 100%; padding: 6% 8%; }
+
+.a3d__hud {
+	position: absolute; left: var(--gutter); right: var(--gutter); bottom: 96px;
+	display: flex; align-items: center; justify-content: space-between; gap: var(--s-3);
+	pointer-events: none;
+}
+@media (min-width: 960px) { .a3d__hud { left: 0; right: 32px; } }
+.a3d__hud > * { pointer-events: auto; }
+.a3d__hint {
+	display: none; align-items: center; gap: 8px; margin: 0;
+	padding: 8px 14px; border-radius: 999px;
+	background: rgb(251 244 230 / .82); color: var(--earth-900);
+	-webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+	font-size: .9rem; font-weight: 700;
+}
+.is-3d .a3d__hint { display: inline-flex; }
+.a3d__hint .icon { width: 18px; height: 18px; }
+.a3d__controls { display: none; gap: 8px; }
+.is-3d .a3d__controls { display: flex; }
+.a3d__controls button {
+	width: 44px; height: 44px; display: grid; place-items: center;
+	border-radius: 50%; border: 1.5px solid rgb(43 27 14 / .25);
+	background: rgb(251 244 230 / .88); color: var(--earth-900);
+	cursor: pointer; touch-action: manipulation;
+	transition: transform .2s var(--spring), background-color .2s;
+}
+.a3d__controls button:hover { background: #fff; transform: translateY(-2px); }
+.a3d__controls button:active { transform: scale(.94); }
+.a3d__controls .icon { width: 20px; height: 20px; }
+
+.a3d__legend {
+	position: absolute; right: 32px; top: 24px;
+	display: none; align-items: center; gap: 8px;
+	font-size: .8rem; font-weight: 700; color: inherit; opacity: .8;
+}
+.is-3d .a3d__legend { display: flex; }
+@media (max-width: 959px) { .a3d__legend { right: var(--gutter); top: 8px; } }
+.a3d__scale { width: 88px; height: 10px; border-radius: 5px; background: linear-gradient(90deg, #E9D3A1, #F5A524, #B8321F); border: 1px solid rgb(43 27 14 / .2); }
+
+/* Tooltip pinned to a 3D point (translate set by script). */
+.a3d__tip {
+	position: absolute; left: 0; top: 0; z-index: 3;
+	width: 240px; margin: 0;
+	pointer-events: none;
+	background: var(--sand-50); color: var(--earth-900);
+	border: 2px solid var(--earth-900); border-radius: 16px;
+	box-shadow: var(--shadow-lift);
+	overflow: hidden;
+	translate: -50% calc(-100% - 22px);
+	animation: tip-in .25s var(--spring);
+}
+.a3d__tip[hidden] { display: none; }
+.a3d__tip::after { content: ""; display: block; height: 6px; background: var(--kente-strip); }
+.a3d__tip img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: var(--sand-100); }
+.a3d__tip p { margin: 0; padding: 0 14px; }
+.a3d__tip-title { font-family: var(--font-display); font-weight: 800; font-size: 1.15rem; padding-top: 10px !important; line-height: 1.2; }
+.a3d__tip-place { font-size: .9rem; }
+.a3d__tip-meta { font-size: .8rem; color: var(--earth-600); padding-bottom: 12px !important; }
+.a3d__tip.is-country { width: 210px; }
+.a3d__tip.is-peek { animation: tip-in .4s var(--spring); }
+@keyframes tip-in { from { opacity: 0; scale: .85; } }
+
+/* Grass along the bottom of the hero. */
+
+.hero__grass {
+	position: absolute; left: 0; right: 0; bottom: -1px; z-index: 1;
+	width: 100%; height: 90px; pointer-events: none;
+}
+.blade { transform-box: fill-box; transform-origin: 50% 100%; animation: sway 5s ease-in-out infinite alternate; }
+.blade--0 { fill: #8A6420; animation-duration: 4.6s; }
+.blade--1 { fill: #A87A2A; animation-duration: 5.4s; animation-delay: -1.2s; }
+.blade--2 { fill: #6E4E18; animation-duration: 6s; animation-delay: -2.4s; }
+.blade--3 { fill: #C99A3B; animation-duration: 5s; animation-delay: -.6s; }
+@keyframes sway { from { transform: skewX(-4deg); } to { transform: skewX(5deg); } }
+:root[data-theme="night"] .blade--0 { fill: #1B2A1F; }
+:root[data-theme="night"] .blade--1 { fill: #233528; }
+:root[data-theme="night"] .blade--2 { fill: #142018; }
+:root[data-theme="night"] .blade--3 { fill: #2C4232; }
+
+/* Today's best spot: a photo and a ranger's log. */
+
+.spot {
+	display: grid; gap: var(--s-5); align-items: center;
+	padding: var(--s-7) 0 var(--s-6);
+}
+@media (min-width: 900px) { .spot { grid-template-columns: 7fr 5fr; } }
+.spot__photo {
+	display: block; border-radius: var(--radius); overflow: hidden;
+	box-shadow: var(--shadow-lift);
+	transition: transform .35s var(--ease);
+}
+.spot__photo img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+.spot__log h2 { font-size: 1.1rem; font-family: var(--font-body); font-weight: 800; color: var(--accent-text); margin-bottom: var(--s-2); }
+.spot__animal { font-family: var(--font-display); font-size: clamp(2.2rem, 4.5vw, 3.4rem); font-weight: 900; line-height: 1; margin: 0 0 6px; letter-spacing: -.02em; }
+.spot__animal a { color: var(--text); text-decoration: none; }
+.spot__animal a:hover { color: var(--accent-text); }
+.spot__latin { font-family: var(--font-display); font-style: italic; color: var(--muted); font-size: 1.15rem; }
+.spot__fact { font-size: 1.05rem; color: var(--text-soft); border-left: 4px solid var(--kente-gold); padding-left: var(--s-3); margin: var(--s-4) 0; }
+
+.log { display: grid; gap: 0; margin: var(--s-4) 0 0; border-top: 1px solid var(--line); }
+.log > div { display: grid; grid-template-columns: 7.5em 1fr; gap: var(--s-3); padding: 10px 0; border-bottom: 1px solid var(--line); }
+.log dt { font-weight: 800; color: var(--muted); }
+.log dd { margin: 0; overflow-wrap: anywhere; }
+
+/* Who's in the grass: arch windows that rise on hover, focus or a random peek. */
+
+.grassline { padding-top: var(--s-6); overflow: hidden; }
+.grassline__field { position: relative; height: 300px; margin-top: var(--s-3); }
+.grassline__animals { position: absolute; inset: 0; list-style: none; margin: 0; padding: 0; }
+.peeker {
+	position: absolute; bottom: 30px;
+	width: clamp(92px, 11vw, 140px);
+	translate: -50% 0;
+}
+.peeker--back { bottom: 64px; width: clamp(78px, 9vw, 112px); }
+.peeker a { display: flex; flex-direction: column; align-items: center; text-decoration: none; }
+.peeker__window {
+	display: block; width: 100%; aspect-ratio: 4 / 5;
+	border-radius: 999px 999px 18px 18px; overflow: hidden;
+	border: 4px solid var(--sand-50);
+	box-shadow: 0 0 0 2px var(--earth-900), var(--shadow);
+	background: var(--sand-100);
+	transform: translateY(58%);
+	transition: transform .55s var(--spring);
+}
+.peeker__window img { width: 100%; height: 100%; object-fit: cover; }
+.peeker__tag {
+	order: -1; margin-bottom: 10px;
+	padding: 6px 12px; border-radius: 999px; white-space: nowrap;
+	background: var(--earth-900); color: var(--sand-50);
+	font-size: .82rem; font-weight: 800;
+	opacity: 0; transform: translateY(20px) scale(.9);
+	transition: opacity .25s var(--ease), transform .4s var(--spring);
+	position: relative; z-index: 3;
+}
+.peeker a:hover .peeker__window, .peeker a:focus-visible .peeker__window, .peeker.is-peeking .peeker__window { transform: translateY(8%); }
+.peeker a:hover .peeker__tag, .peeker a:focus-visible .peeker__tag, .peeker.is-peeking .peeker__tag { opacity: 1; transform: none; }
+.peeker a:focus-visible { outline: none; }
+.peeker a:focus-visible .peeker__window { box-shadow: 0 0 0 2px var(--earth-900), 0 0 0 6px var(--gopher); }
+.peeker.is-ducking .peeker__window { transform: translateY(100%); transition-duration: .35s; }
+.grassline__front {
+	position: absolute; left: 0; right: 0; bottom: 0; z-index: 2;
+	width: 100%; height: 120px; pointer-events: none;
+}
+@media (max-width: 640px) {
+	.peeker:nth-child(n+6) { display: none; }
+	.peeker__tag { font-size: .75rem; }
+}
+
+/* The safari in numbers, as one sentence. */
+
+.tally { padding: var(--s-7) 0 var(--s-5); }
+.tally__sentence {
+	font-family: var(--font-display); font-weight: 700;
+	font-size: clamp(1.7rem, 3.6vw, 2.9rem); line-height: 1.25; letter-spacing: -.015em;
+	max-width: 30ch; margin-bottom: var(--s-4);
+}
+.tally__num {
+	display: inline-block; min-width: 1.6ch; font-weight: 900; color: var(--accent-text);
+	font-variant-numeric: tabular-nums;
+	border-bottom: 6px solid; border-image: var(--kente-strip) 1;
+	line-height: 1;
+}
+.tally__link { display: inline-flex; align-items: center; gap: 8px; font-weight: 800; min-height: 44px; }
+.tally__link .icon { transition: transform .25s var(--spring); }
+.tally__link:hover .icon { transform: translateX(4px); }
+
+@media (prefers-reduced-motion: reduce) {
+	.hero__letter, .hero__line { animation: none; }
+	.blade, .hero__sun { animation: none; }
+	.peeker__window { transform: translateY(20%); }
+}

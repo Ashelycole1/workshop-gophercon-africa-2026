@@ -26,7 +26,6 @@ type (
 		Slug       string
 		Name       string
 		Scientific string
-		Emoji      string
 		Fact       string
 		Sightings  []sighting.Sighting
 	}
@@ -63,7 +62,6 @@ func Build(all []sighting.Sighting) *Site {
 				Slug:       Slug(name),
 				Name:       name,
 				Scientific: s.Species.ScientificName,
-				Emoji:      Emoji(name),
 				Fact:       Fact(name),
 			}
 			animals[name] = a

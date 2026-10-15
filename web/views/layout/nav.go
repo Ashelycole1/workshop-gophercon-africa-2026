@@ -3,18 +3,18 @@ package layout
 import "cmp"
 
 type navItem struct {
-	Label, Href, Page string
+	Label, Href, Page, Icon string
 }
 
 var navItems = []navItem{
-	{"Safari", "/", "home"},
-	{"Map", "/map/", "map"},
-	{"Sightings", "/sightings/", "sightings"},
-	{"Animals", "/animals/", "animals"},
-	{"Countries", "/countries/", "countries"},
-	{"Gallery", "/gallery/", "gallery"},
-	{"Stats", "/stats/", "stats"},
-	{"Migrations", "/migrations/", "migrations"},
+	{"Safari", "/", "home", "house"},
+	{"Map", "/map/", "map", "map-trifold"},
+	{"Sightings", "/sightings/", "sightings", "binoculars"},
+	{"Animals", "/animals/", "animals", "paw-print"},
+	{"Countries", "/countries/", "countries", "globe-hemisphere-east"},
+	{"Gallery", "/gallery/", "gallery", "images"},
+	{"Stats", "/stats/", "stats", "chart-bar"},
+	{"Migrations", "/migrations/", "migrations", "path"},
 }
 
 // pageTitle puts the site's name after the page's.

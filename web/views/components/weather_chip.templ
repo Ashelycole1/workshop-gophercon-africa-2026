@@ -8,7 +8,7 @@ import (
 templ WeatherChip(s sighting.Sighting) {
 	if sky, ok := safari.Weather(s); ok {
 		<p class={ "wx", "wx--" + sky.Kind } title={ sky.Detail }>
-			<span class="wx__icon" aria-hidden="true">{ sky.Icon }</span>
+			@Icon(sky.Icon)
 			<span class="wx__temp">{ sky.Temp }</span>
 			<span class="wx__word">{ sky.Word }</span>
 			<span class="wx__verdict">{ sky.Verdict }</span>

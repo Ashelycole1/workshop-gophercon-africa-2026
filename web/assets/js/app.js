@@ -89,7 +89,7 @@
 			progress = 0;
 			setTheme("night", true);
 			confetti();
-			toast("🌙 Night safari unlocked. Listen for the hyenas…");
+			toast("Night safari unlocked. Listen for the hyenas.");
 		}
 	});
 
@@ -182,12 +182,12 @@
 	var tipTimer;
 
 	var jokes = [
-		"Why did the gopher refuse to share memory? It prefers to communicate. 📨",
-		"A lion walks into a goroutine. Nobody waits for it. 🦁",
-		"I tried to catch a zebra, but it returned a nil pointer… just stripes. 🦓",
-		"if err != nil { return safari.Njema } 🐹",
-		"My favourite animal? The <code>select</code>-ive leopard. It only waits on one channel. 🐆",
-		"Why are giraffes great at code review? They always see the bigger picture. 🦒",
+		"Why did the gopher refuse to share memory? It prefers to communicate.",
+		"A lion walks into a goroutine. Nobody waits for it.",
+		"I tried to catch a zebra, but it returned a nil pointer… just stripes.",
+		"<code>if err != nil { return safari.Njema() }</code>",
+		"My favourite animal? The <code>select</code>-ive leopard. It only waits on one channel.",
+		"Why are giraffes great at code review? They always see the bigger picture.",
 	];
 
 	function openBubble(text, isTip, focus) {

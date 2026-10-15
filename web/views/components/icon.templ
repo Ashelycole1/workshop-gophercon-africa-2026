@@ -1,0 +1,7 @@
+package components
+
+templ Icon(name string) {
+	<svg class={ "icon", "icon--" + name } viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false">
+		@templ.Raw(iconPaths[name])
+	</svg>
+}

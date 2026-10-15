@@ -49,9 +49,9 @@ func Credit(m sighting.Media) string {
 		return licence(m.License)
 	}
 	if l := licence(m.License); l != "" {
-		return fmt.Sprintf("📷 %s · %s", who, l)
+		return fmt.Sprintf("%s, %s", who, l)
 	}
-	return "📷 " + who
+	return who
 }
 
 func licence(url string) string {

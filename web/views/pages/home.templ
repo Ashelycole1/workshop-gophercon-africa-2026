@@ -1,27 +1,192 @@
 package pages
 
 import (
-	"workshop/internal/domain/sighting"
+	"workshop/web/safari"
 	"workshop/web/views/components"
 	"workshop/web/views/layout"
 )
 
-templ Home(sightings []sighting.Sighting) {
+templ Home(site *safari.Site) {
 	@layout.Base(layout.BaseProps{
-		Title: "Sightings",
+		Title:       "",
+		Description: "A living 3D safari of real African wildlife sightings, built in Go for GopherCon Africa 2026.",
+		Page:        "home",
+		Styles:      []string{"/assets/css/home.css"},
+		Scripts:     []string{"/assets/js/home.js"},
+		Modules:     []string{"/assets/js/africa3d.js"},
 	}) {
-		<h1>Sightings</h1>
-		if len(sightings) == 0 {
-			<p>No sightings have been ingested yet.</p>
-		} else {
-			<p>Total: { len(sightings) }</p>
-			<ul class="sightings">
-				for _, s := range sightings {
+		<section class="hero" data-africa3d aria-labelledby="hero-title">
+			<div class="hero__sky" aria-hidden="true"></div>
+			<div class="hero__sun" aria-hidden="true"></div>
+			<div class="hero__grid wrap">
+				<div class="hero__copy">
+					<p class="hero__where">GopherCon Africa 2026, Nairobi</p>
+					<h1 id="hero-title" class="hero__title" aria-label={ "Karibu. " + itoa(len(site.Sightings)) + " sightings. One continent." }>
+						<span class="hero__karibu" aria-hidden="true">
+							for i, l := range letters("Karibu.") {
+								<span class="hero__letter" style={ templ.SafeCSS(delay(i)) }>{ l }</span>
+							}
+						</span>
+						<span class="hero__line" aria-hidden="true">{ itoa(len(site.Sightings)) } sightings.</span>
+						<span class="hero__line" aria-hidden="true">One continent.</span>
+					</h1>
+					<p class="hero__lede">Real wildlife sightings from { itoa(len(site.Countries)) } African countries, logged by people in the field and shared openly. The taller the country, the more animals were seen there.</p>
+					<div class="hero__ctas">
+						<a class="btn btn--primary" href="/map/">
+							@components.Icon("map-trifold")
+							<span>Start the safari</span>
+						</a>
+						<a class="btn btn--ghost" href="/animals/">
+							@components.Icon("paw-print")
+							<span>Browse animals</span>
+						</a>
+					</div>
+				</div>
+				<div class="a3d">
+					<div class="a3d__stage">
+						@components.AfricaMap(site.Sightings, "", safari.MapViewBox(), "Map of Africa with a dot for each wildlife sighting")
+					</div>
+					<div class="a3d__tip" hidden>
+						<img alt="" width="240" height="180" hidden/>
+						<p class="a3d__tip-title"></p>
+						<p class="a3d__tip-place"></p>
+						<p class="a3d__tip-meta"></p>
+					</div>
+					<div class="a3d__hud">
+						<p class="a3d__hint">
+							@components.Icon("hand-grabbing")
+							<span class="for-mouse">Drag to turn. Hover a pin to meet the animal.</span>
+							<span class="for-touch">Swipe sideways to turn. Tap a pin to meet the animal.</span>
+						</p>
+						<div class="a3d__controls" role="group" aria-label="Turn the map">
+							<button type="button" data-turn="left" aria-label="Turn the map left">
+								@components.Icon("caret-left")
+							</button>
+							<button type="button" data-turn="reset" aria-label="Reset the view">
+								@components.Icon("compass")
+							</button>
+							<button type="button" data-turn="right" aria-label="Turn the map right">
+								@components.Icon("caret-right")
+							</button>
+						</div>
+					</div>
+					<div class="a3d__legend" aria-hidden="true">
+						<span>Fewer sightings</span>
+						<span class="a3d__scale"></span>
+						<span>More</span>
+					</div>
+				</div>
+			</div>
+			<svg class="hero__grass" viewBox="0 0 1200 90" preserveAspectRatio="none" aria-hidden="true">
+				for i, d := range safari.Grass(7, 8, 34, 90) {
+					<path class={ "blade", "blade--" + itoa(i%4) } d={ d }></path>
+				}
+			</svg>
+			@templ.JSONScript("africa3d-data", site.Scene3D())
+		</section>
+		if s, ok := bestSpot(site); ok {
+			<section class="spot wrap" aria-labelledby="spot-title">
+				<a class="spot__photo" href={ templ.SafeURL(safari.SightingURL(s)) } data-tilt>
+					<img src={ safari.Sized(safari.Photo(s), "large") } alt={ safari.Alt(s) } loading="lazy" width="1024" height="768"/>
+				</a>
+				<div class="spot__log">
+					<h2 id="spot-title">Today's best spot</h2>
+					<p class="spot__animal">
+						<a href={ templ.SafeURL(safari.SightingURL(s)) }>{ safari.AnimalName(s.Species) }</a>
+					</p>
+					if s.Species.ScientificName != "" {
+						<p class="spot__latin">{ s.Species.ScientificName }</p>
+					}
+					<dl class="log">
+						<div>
+							<dt>Seen</dt>
+							<dd><time datetime={ safari.ISODate(s) }>{ safari.LongDate(s) }</time></dd>
+						</div>
+						<div>
+							<dt>Where</dt>
+							<dd>{ safari.FullPlace(s) }</dd>
+						</div>
+						<div>
+							<dt>Spotted by</dt>
+							<dd>{ safari.Spotter(s) }</dd>
+						</div>
+						if sky, ok := safari.Weather(s); ok {
+							<div>
+								<dt>Sky</dt>
+								<dd>{ sky.Word }, { sky.Temp }. { sky.Verdict }.</dd>
+							</div>
+						}
+					</dl>
+					<p class="spot__fact">{ safari.Fact(safari.AnimalName(s.Species)) }</p>
+					<a class="btn btn--primary" href={ templ.SafeURL(safari.SightingURL(s)) }>Open the field log</a>
+				</div>
+			</section>
+		}
+		<section class="grassline" aria-labelledby="grass-title">
+			<div class="wrap">
+				<div class="section__head">
+					<h2 id="grass-title">Who's in the grass?</h2>
+					<p>One of each of the most-seen animals. Point at one to say hello.</p>
+				</div>
+			</div>
+			<div class="grassline__field">
+				<ul class="grassline__animals" role="list">
+					for _, spot := range safari.Spots(site.Pick(7)) {
+						<li class={ "peeker", templ.KV("peeker--back", spot.Back) } style={ templ.SafeCSS("left:" + spot.Left) }>
+							<a href={ templ.SafeURL(safari.SightingURL(spot.Sighting)) }>
+								<span class="peeker__tag">{ safari.AnimalName(spot.Sighting.Species) } · { safari.Place(spot.Sighting) }</span>
+								<span class="peeker__window">
+									<img src={ safari.Sized(safari.Photo(spot.Sighting), "small") } alt={ safari.Alt(spot.Sighting) } loading="lazy" width="240" height="240"/>
+								</span>
+							</a>
+						</li>
+					}
+				</ul>
+				<svg class="grassline__front" viewBox="0 0 1200 120" preserveAspectRatio="none" aria-hidden="true">
+					for i, d := range safari.Grass(42, 10, 40, 120) {
+						<path class={ "blade", "blade--" + itoa(i%4) } d={ d }></path>
+					}
+				</svg>
+			</div>
+		</section>
+		<section class="tally wrap" aria-label="The safari in numbers">
+			<p class="tally__sentence">
+				<span class="tally__num" data-count={ itoa(len(site.Sightings)) }>{ itoa(len(site.Sightings)) }</span> sightings of
+				<span class="tally__num" data-count={ itoa(len(site.Animals)) }>{ itoa(len(site.Animals)) }</span> kinds of animal in
+				<span class="tally__num" data-count={ itoa(len(site.Countries)) }>{ itoa(len(site.Countries)) }</span> countries, by
+				<span class="tally__num" data-count={ itoa(spotters(site)) }>{ itoa(spotters(site)) }</span> people who stopped to look.
+			</p>
+			<a class="tally__link" href="/stats/">
+				<span>See the full stats</span>
+				@components.Icon("arrow-right")
+			</a>
+		</section>
+		<section class="section wrap" aria-labelledby="latest-title">
+			<div class="section__head">
+				<h2 id="latest-title">Fresh from the field</h2>
+				<a class="tally__link" href="/sightings/">
+					<span>Every sighting</span>
+					@components.Icon("arrow-right")
+				</a>
+			</div>
+			@components.SightingGrid(latest(site, 6))
+		</section>
+		<section class="section wrap" aria-labelledby="countries-title">
+			<div class="section__head">
+				<h2 id="countries-title">Pick a country</h2>
+				<p>The same countries as the 3D map, as a list.</p>
+			</div>
+			<ul class="chips">
+				for _, c := range site.Countries {
 					<li>
-						@components.SightingCard(s)
+						<a class="chip" href={ templ.SafeURL("/countries/" + c.Slug) }>
+							@components.Silhouette(c.Code, "")
+							<span>{ c.Name }</span>
+							<span class="chip__count">{ itoa(len(c.Sightings)) }</span>
+						</a>
 					</li>
 				}
 			</ul>
-		}
+		</section>
 	}
 }
