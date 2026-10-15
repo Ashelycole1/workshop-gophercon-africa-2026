@@ -41,10 +41,10 @@ function init(root, data) {
 	const scene = new THREE.Scene();
 	const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
 
-	// Light: a low golden sun from the west, a warm sky, a dusty ground bounce.
-	const hemi = new THREE.HemisphereLight(0xffe2b8, 0x5a3418, 1.25);
+	// Light: soft daylight from the west, a pale sky, a green ground bounce.
+	const hemi = new THREE.HemisphereLight(0xf4f8f0, 0x2b4a36, 1.35);
 	scene.add(hemi);
-	const sun = new THREE.DirectionalLight(0xffb45e, 3.0);
+	const sun = new THREE.DirectionalLight(0xfffbea, 2.6);
 	sun.position.set(-7, 6.5, 4);
 	sun.castShadow = true;
 	sun.shadow.mapSize.set(2048, 2048);
@@ -62,9 +62,9 @@ function init(root, data) {
 
 	// Countries.
 	const toWorld = (x, y) => [(x - 355) / 100, -(y - 370) / 100];
-	const sand = new THREE.Color("#E9D3A1");
-	const low = new THREE.Color("#F5A524");
-	const high = new THREE.Color("#B8321F");
+	const sand = new THREE.Color("#E2EADF");
+	const low = new THREE.Color("#B9DCA8");
+	const high = new THREE.Color("#1F4D3A");
 	const africa = new THREE.Group();
 	africa.rotation.x = -Math.PI / 2;
 	scene.add(africa);
@@ -86,7 +86,7 @@ function init(root, data) {
 		mesh.receiveShadow = true;
 		mesh.userData = { country: c, lift: 0, target: 0, base: colour };
 		const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geo, 40),
-			new THREE.LineBasicMaterial({ color: 0x2b1b0e, transparent: true, opacity: 0.35 }));
+			new THREE.LineBasicMaterial({ color: 0x15201a, transparent: true, opacity: 0.25 }));
 		mesh.add(edges);
 		africa.add(mesh);
 		countries.push(mesh);
@@ -96,12 +96,12 @@ function init(root, data) {
 	const pins = data.pins;
 	const stemGeo = new THREE.CylinderGeometry(0.007, 0.007, 1, 6);
 	stemGeo.translate(0, 0.5, 0);
-	const stems = new THREE.InstancedMesh(stemGeo, new THREE.MeshStandardMaterial({ color: 0x2b1b0e, roughness: 1 }), pins.length);
+	const stems = new THREE.InstancedMesh(stemGeo, new THREE.MeshStandardMaterial({ color: 0x15201a, roughness: 1 }), pins.length);
 	const heads = new THREE.InstancedMesh(new THREE.SphereGeometry(0.05, 16, 12),
-		new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xf2b312, emissiveIntensity: 0.45, roughness: 0.35 }), pins.length);
+		new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xd4f06a, emissiveIntensity: 0.55, roughness: 0.35 }), pins.length);
 	heads.castShadow = true;
-	const gold = new THREE.Color("#F2B312");
-	const cyan = new THREE.Color("#6AD4E8");
+	const gold = new THREE.Color("#D4F06A");
+	const cyan = new THREE.Color("#FFFFFF");
 	const m = new THREE.Matrix4();
 	const pinWorld = [];
 	pins.forEach((p, i) => {
@@ -308,12 +308,12 @@ function init(root, data) {
 	// Day and night.
 	function applyTheme(theme) {
 		const night = theme === "night";
-		hemi.color.set(night ? 0x8fa3d9 : 0xffe2b8);
-		hemi.groundColor.set(night ? 0x0b1220 : 0x5a3418);
-		hemi.intensity = night ? 0.7 : 1.25;
-		sun.color.set(night ? 0xbfd0ff : 0xffb45e);
-		sun.intensity = night ? 1.3 : 3.0;
-		heads.material.emissiveIntensity = night ? 1.6 : 0.45;
+		hemi.color.set(night ? 0x9fb8a8 : 0xf4f8f0);
+		hemi.groundColor.set(night ? 0x0d1411 : 0x2b4a36);
+		hemi.intensity = night ? 0.8 : 1.35;
+		sun.color.set(night ? 0xcfe3d4 : 0xfffbea);
+		sun.intensity = night ? 1.3 : 2.6;
+		heads.material.emissiveIntensity = night ? 1.6 : 0.55;
 	}
 	applyTheme(document.documentElement.dataset.theme);
 	document.addEventListener("safari:theme", e => applyTheme(e.detail));

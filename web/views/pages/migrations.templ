@@ -1,0 +1,105 @@
+package pages
+
+import (
+	"workshop/web/safari"
+	"workshop/web/views/components"
+	"workshop/web/views/layout"
+)
+
+templ Migrations(site *safari.Site) {
+	@layout.Base(layout.BaseProps{
+		Title:       "Migrations",
+		Description: "Follow Africa's great journeys month by month: wildebeest, elephants and flamingos, with the real sightings along the way.",
+		Page:        "migrations",
+		Tip:         "Press play and watch the herds move!",
+		Styles:      []string{"/assets/css/migrations.css"},
+		Scripts:     []string{"/assets/js/migrations.js"},
+	}) {
+		<header class="page-head wrap">
+			<p class="badge">
+				@components.Icon("path")
+				<span>{ itoa(len(safari.Routes)) } journeys, 12 months</span>
+			</p>
+			<h1>Always on the <em class="script">move.</em></h1>
+			<p class="page-head__lede">Pick a month and watch where the herds are. The dots are real sightings of each animal from this safari.</p>
+		</header>
+		<div class="months wrap" data-months data-start={ itoa(thisMonth()) } hidden>
+			<button class="months__play" type="button" data-months-play aria-label="Play the year">
+				<span class="months__icon-play">
+					@components.Icon("play")
+				</span>
+				<span class="months__icon-pause">
+					@components.Icon("pause")
+				</span>
+			</button>
+			<div class="months__track">
+				<label class="sr-only" for="month">Month</label>
+				<input id="month" type="range" min="0" max="11" step="1" value={ itoa(thisMonth()) } aria-valuetext={ safari.MonthNames[thisMonth()] }/>
+				<ol class="months__ticks" aria-hidden="true">
+					for i, m := range safari.MonthNames {
+						<li data-tick={ itoa(i) }>{ m }</li>
+					}
+				</ol>
+			</div>
+			<output class="months__now" for="month" aria-live="polite">{ safari.MonthNames[thisMonth()] }</output>
+		</div>
+		<div class="routes wrap">
+			for n, r := range safari.Routes {
+				<article class="route" data-route id={ r.Slug } aria-labelledby={ r.Slug + "-title" }>
+					<div class="route__map">
+						<svg class="route__svg" viewBox={ r.ViewBox() } preserveAspectRatio="xMidYMid slice" role="img" aria-label={ "Map of " + r.Name }>
+							<g class="africa-map__land route__land">
+								for _, o := range safari.Outlines() {
+									<path d={ o.D }></path>
+								}
+							</g>
+							<g class="route__seen">
+								for _, s := range r.Sightings(site) {
+									<circle cx={ safari.X(s) } cy={ safari.Y(s) } r={ scaled(r, .9) }>
+										<title>{ safari.AnimalName(s.Species) }, { safari.Place(s) }</title>
+									</circle>
+								}
+							</g>
+							<path class="route__trail" d={ r.D() } style={ templ.SafeCSS("stroke-width:" + scaled(r, .55)) }></path>
+							<path class="route__walked" d={ r.D() } data-trail style={ templ.SafeCSS("stroke-width:" + scaled(r, .75)) }></path>
+							<g class="route__stops" data-points={ r.Points() }>
+								for i, s := range r.Months {
+									<circle cx={ stopX(s) } cy={ stopY(s) } r={ scaled(r, .6) } data-stop={ itoa(i) }></circle>
+								}
+							</g>
+							<g class="route__herd" data-herd>
+								<circle class="route__pulse" r={ scaled(r, 3.2) }></circle>
+								<circle class="route__dot" r={ scaled(r, 1.7) }></circle>
+							</g>
+						</svg>
+						<span class="route__num" aria-hidden="true">0{ itoa(n + 1) }</span>
+					</div>
+					<div class="route__copy">
+						<p class="route__animal">{ r.Animal }</p>
+						<h2 id={ r.Slug + "-title" }>{ r.Name }</h2>
+						<p class="route__summary">{ r.Summary }</p>
+						<ol class="route__months">
+							for i, s := range r.Months {
+								<li class={ templ.KV("is-now", i == thisMonth()) } data-month={ itoa(i) }>
+									<span class="route__month">{ safari.MonthNames[i] }</span>
+									<span class="route__where">
+										<strong>{ s.Place }</strong>
+										<span>{ s.Caption }</span>
+									</span>
+								</li>
+							}
+						</ol>
+						if seen := r.Sightings(site); len(seen) > 0 {
+							<p class="route__real">
+								@components.Icon("binoculars")
+								<span>{ safari.Plural(len(seen), "real sighting") } on the map.</span>
+								<a href={ templ.SafeURL(routeAnimal(site, r)) }>Meet them</a>
+							</p>
+						}
+					</div>
+				</article>
+			}
+		</div>
+		<p class="routes__note wrap">These journeys are drawn from what's known about each migration, as a guide. They aren't live tracking: herds follow the rain, and no two years are the same.</p>
+	}
+}

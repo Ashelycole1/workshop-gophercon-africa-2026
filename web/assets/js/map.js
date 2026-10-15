@@ -19,11 +19,12 @@
 	}
 
 	var map = L.map(el, { zoomSnap: 0.5, worldCopyJump: false, minZoom: 2 });
+	el.classList.add("is-satellite");
 	var africa = L.latLngBounds([[-36, -19], [38, 52]]);
 	map.fitBounds(africa);
 
-	// Two key-free base maps: OpenStreetMap, warmed or darkened in CSS to suit
-	// day or night, and Esri's satellite imagery for zooming into the parks.
+	// Two key-free base maps: Esri's satellite imagery, the default, for zooming
+	// into the parks, and OpenStreetMap, tinted in CSS to suit day or night.
 	var streets = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
 		maxZoom: 19,
 		attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
@@ -34,22 +35,26 @@
 		attribution: "Imagery &copy; Esri, Maxar, Earthstar Geographics",
 		className: "atlas-tiles--satellite",
 	});
-	var base = streets.addTo(map);
+	var base = satellite.addTo(map);
 
 	// The country outlines ship with the page, so Africa shows even if the
 	// conference wifi blocks the tiles.
-	var land = L.polygon(data.outlines, {
-		interactive: false, weight: 1, color: "#8A5A2B", opacity: 0.55, fillColor: "#E2C98F", fillOpacity: 0.28,
-	}).addTo(map);
+	var land = L.polygon(data.outlines, { interactive: false, weight: 1 }).addTo(map);
 
-	function theme(t) {
-		var night = t === "night";
-		land.setStyle(night
-			? { color: "#F4EBC1", opacity: 0.35, fillColor: "#2A3A5C", fillOpacity: 0.25 }
-			: { color: "#8A5A2B", opacity: 0.55, fillColor: "#E2C98F", fillOpacity: 0.28 });
+	// Outlines read on both base maps: thin and light over the satellite, a
+	// soft green fill over the streets.
+	function theme() {
+		var night = document.documentElement.dataset.theme === "night";
+		if (base === satellite) {
+			land.setStyle({ color: "#D4F06A", opacity: 0.55, fillOpacity: 0 });
+		} else if (night) {
+			land.setStyle({ color: "#9FD18A", opacity: 0.35, fillColor: "#213029", fillOpacity: 0.25 });
+		} else {
+			land.setStyle({ color: "#1F4D3A", opacity: 0.45, fillColor: "#B9DCA8", fillOpacity: 0.28 });
+		}
 	}
-	theme(document.documentElement.dataset.theme);
-	document.addEventListener("safari:theme", function (e) { theme(e.detail); });
+	theme();
+	document.addEventListener("safari:theme", theme);
 
 	// A two-button switch between the base maps, as a Leaflet control.
 	var Switch = L.Control.extend({
@@ -69,7 +74,8 @@
 					map.removeLayer(base);
 					base = pair[1].addTo(map).bringToBack();
 					box.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
-					land.setStyle({ fillOpacity: base === satellite ? 0 : (document.documentElement.dataset.theme === "night" ? 0.25 : 0.28) });
+					el.classList.toggle("is-satellite", base === satellite);
+					theme();
 				});
 			});
 			L.DomEvent.disableClickPropagation(box);
@@ -95,14 +101,26 @@
 
 	// Markers and popups are built as elements, never from HTML strings:
 	// names, places and photo URLs all came from GBIF.
+	// A pin shows a soft shimmer until its photo arrives, and a paw if the
+	// photo never does. Clustering keeps only the pins on screen in the page,
+	// so they load straight away rather than lazily.
 	var markers = data.pins.map(function (p) {
 		var pin = document.createElement("span");
 		pin.className = "atlas-pin";
 		if (p.photo) {
+			pin.classList.add("is-loading");
 			var img = document.createElement("img");
-			img.src = p.photo;
 			img.alt = "";
-			img.loading = "lazy";
+			img.decoding = "async";
+			img.referrerPolicy = "no-referrer";
+			img.addEventListener("load", function () { pin.classList.remove("is-loading"); });
+			img.addEventListener("error", function () {
+				pin.classList.remove("is-loading");
+				pin.classList.add("atlas-pin--empty");
+				img.remove();
+				p.photo = "";
+			});
+			img.src = p.photo;
 			pin.appendChild(img);
 		} else {
 			pin.classList.add("atlas-pin--empty");
@@ -113,7 +131,7 @@
 			alt: p.animal + ", " + p.place,
 			riseOnHover: true,
 		});
-		marker.bindPopup(function () { return popup(p); }, { maxWidth: 260, minWidth: 220, className: "atlas-popup" });
+		marker.bindPopup(function () { return popup(p, marker); }, { maxWidth: 260, minWidth: 240, className: "atlas-popup", autoPanPadding: [24, 24] });
 		marker.on("click", function () {
 			if (reduced) return;
 			pin.classList.remove("is-bounce");
@@ -124,15 +142,28 @@
 		return marker;
 	});
 
-	function popup(p) {
+	// The popup's photo has a fixed frame, so the popup is the right size
+	// before the photo arrives; once it does, the map pans to fit it.
+	function popup(p, marker) {
 		var box = document.createElement("div");
 		if (p.photo) {
+			var frame = document.createElement("span");
+			frame.className = "atlas-popup__photo is-loading";
 			var img = document.createElement("img");
-			img.src = p.photo;
 			img.alt = p.animal + " photographed in " + p.place;
 			img.width = 240;
 			img.height = 180;
-			box.appendChild(img);
+			img.decoding = "async";
+			img.referrerPolicy = "no-referrer";
+			img.addEventListener("load", function () {
+				frame.classList.remove("is-loading");
+				var pop = marker.getPopup();
+				if (pop && pop.isOpen()) pop.update();
+			});
+			img.addEventListener("error", function () { frame.remove(); });
+			img.src = p.photo;
+			frame.appendChild(img);
+			box.appendChild(frame);
 		}
 		var h = document.createElement("p");
 		h.className = "atlas-popup__name";

@@ -67,7 +67,7 @@ func Base(props BaseProps) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\"><meta name=\"theme-color\" content=\"#E26D1F\"><meta property=\"og:title\" content=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\"><meta name=\"theme-color\" content=\"#1f4d3a\"><meta property=\"og:title\" content=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -93,7 +93,7 @@ func Base(props BaseProps) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\"><link rel=\"icon\" href=\"/assets/img/favicon.svg\" type=\"image/svg+xml\"><link rel=\"preload\" href=\"/assets/fonts/fraunces-latin-wght-normal.woff2\" as=\"font\" type=\"font/woff2\" crossorigin><link rel=\"preload\" href=\"/assets/fonts/nunito-sans-latin-wght-normal.woff2\" as=\"font\" type=\"font/woff2\" crossorigin><script>\n\t\t\t\t(function () {\n\t\t\t\t\ttry {\n\t\t\t\t\t\tvar t = localStorage.getItem(\"safari_theme\");\n\t\t\t\t\t\tif (!t) t = matchMedia(\"(prefers-color-scheme: dark)\").matches ? \"night\" : \"day\";\n\t\t\t\t\t\tdocument.documentElement.dataset.theme = t;\n\t\t\t\t\t} catch (e) { document.documentElement.dataset.theme = \"day\"; }\n\t\t\t\t})();\n\t\t\t</script><link rel=\"stylesheet\" href=\"/assets/css/app.css\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\"><link rel=\"icon\" href=\"/assets/img/favicon.svg\" type=\"image/svg+xml\"><link rel=\"preload\" href=\"/assets/fonts/geist-latin-wght.woff2\" as=\"font\" type=\"font/woff2\" crossorigin><link rel=\"preload\" href=\"/assets/fonts/kalam-latin-700.woff2\" as=\"font\" type=\"font/woff2\" crossorigin><script>\r\n\t\t\t\t(function () {\r\n\t\t\t\t\ttry {\r\n\t\t\t\t\t\tvar t = localStorage.getItem(\"safari_theme\");\r\n\t\t\t\t\t\tif (!t) t = matchMedia(\"(prefers-color-scheme: dark)\").matches ? \"night\" : \"day\";\r\n\t\t\t\t\t\tdocument.documentElement.dataset.theme = t;\r\n\t\t\t\t\t} catch (e) { document.documentElement.dataset.theme = \"day\"; }\r\n\t\t\t\t})();\r\n\t\t\t</script><link rel=\"stylesheet\" href=\"/assets/css/app.css\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

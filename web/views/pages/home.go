@@ -30,6 +30,32 @@ func latest(site *safari.Site, n int) []sighting.Sighting {
 	return site.Sightings
 }
 
+// strip keeps the n newest sightings with a photo, one per animal.
+func strip(site *safari.Site, n int) []sighting.Sighting {
+	var out []sighting.Sighting
+	seen := map[string]bool{}
+	for _, s := range site.Sightings {
+		name := safari.AnimalName(s.Species)
+		if len(out) == n {
+			break
+		}
+		if seen[name] || safari.Photo(s) == "" {
+			continue
+		}
+		seen[name] = true
+		out = append(out, s)
+	}
+	return out
+}
+
+// topAnimals keeps the n most-sighted animals.
+func topAnimals(site *safari.Site, n int) []safari.Animal {
+	if len(site.Animals) > n {
+		return site.Animals[:n]
+	}
+	return site.Animals
+}
+
 // bestSpot is today's featured sighting.
 func bestSpot(site *safari.Site) (sighting.Sighting, bool) {
 	return safari.BestSpot(site.Sightings, time.Now())

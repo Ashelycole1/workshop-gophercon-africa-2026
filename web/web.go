@@ -33,6 +33,7 @@ func New(logger *slog.Logger, config config.Config, sightingsSvc *sighting.Servi
 	section(mux, "/sightings/", page(handlers.Sightings))
 	section(mux, "/stats/", page(handlers.Stats))
 	section(mux, "/gallery/", page(handlers.Gallery))
+	section(mux, "/migrations/", page(handlers.Migrations))
 	mux.Handle("GET /sightings/{id}", page(handlers.Sighting))
 	section(mux, "/animals/", page(handlers.Animals))
 	mux.Handle("GET /animals/{slug}", page(handlers.Animal))

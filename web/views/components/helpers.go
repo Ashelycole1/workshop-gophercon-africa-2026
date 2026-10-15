@@ -13,6 +13,7 @@ func FilterAttrs(s sighting.Sighting) templ.Attributes {
 	return templ.Attributes{
 		"data-animal":  safari.Slug(safari.AnimalName(s.Species)),
 		"data-country": safari.Slug(safari.CountryName(s)),
+		"data-date":    safari.ISODate(s),
 		"data-search": strings.ToLower(strings.Join([]string{
 			safari.AnimalName(s.Species), s.Species.ScientificName, safari.FullPlace(s), s.RecordedBy,
 		}, " ")),

@@ -62,6 +62,11 @@ func Stats(r *http.Request, site *safari.Site) (templ.Component, bool) {
 	return pages.Stats(site), true
 }
 
+// Migrations follows three great journeys month by month.
+func Migrations(r *http.Request, site *safari.Site) (templ.Component, bool) {
+	return pages.Migrations(site), true
+}
+
 // Gallery is every photo, as a wall.
 func Gallery(r *http.Request, site *safari.Site) (templ.Component, bool) {
 	return pages.Gallery(site), true

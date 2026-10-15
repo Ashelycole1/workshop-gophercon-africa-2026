@@ -9,38 +9,57 @@ import (
 templ Home(site *safari.Site) {
 	@layout.Base(layout.BaseProps{
 		Title:       "",
-		Description: "A living 3D safari of real African wildlife sightings, built in Go for GopherCon Africa 2026.",
+		Description: "Real wildlife sightings, up close: photos, a 3D map of Africa and the weather on the day, built in Go for GopherCon Africa 2026.",
 		Page:        "home",
 		Styles:      []string{"/assets/css/home.css"},
-		Scripts:     []string{"/assets/js/home.js"},
+		Scripts:     []string{"/assets/js/home.js", "/assets/js/wall.js"},
 		Modules:     []string{"/assets/js/africa3d.js"},
 	}) {
 		<section class="hero" data-africa3d aria-labelledby="hero-title">
-			<div class="hero__sky" aria-hidden="true"></div>
-			<div class="hero__sun" aria-hidden="true"></div>
+			<div class="hero__glow" aria-hidden="true"></div>
 			<div class="hero__grid wrap">
 				<div class="hero__copy">
-					<p class="hero__where">GopherCon Africa 2026, Nairobi</p>
-					<h1 id="hero-title" class="hero__title" aria-label={ "Karibu. " + itoa(len(site.Sightings)) + " sightings. One continent." }>
-						<span class="hero__karibu" aria-hidden="true">
-							for i, l := range letters("Karibu.") {
-								<span class="hero__letter" style={ templ.SafeCSS(delay(i)) }>{ l }</span>
-							}
-						</span>
-						<span class="hero__line" aria-hidden="true">{ itoa(len(site.Sightings)) } sightings.</span>
-						<span class="hero__line" aria-hidden="true">One continent.</span>
+					<p class="badge">
+						@components.Icon("globe-hemisphere-east")
+						<span>Sightings from { itoa(len(site.Countries)) } countries</span>
+					</p>
+					<h1 id="hero-title" class="hero__title">
+						<span class="line"><span class="line__inner">Karibu. The wild,</span></span>
+						<span class="line"><span class="line__inner">seen up <em class="script">close.</em></span></span>
 					</h1>
-					<p class="hero__lede">Real wildlife sightings from { itoa(len(site.Countries)) } African countries, logged by people in the field and shared openly. The taller the country, the more animals were seen there.</p>
+					<p class="hero__lede">Every photo here was taken by someone who was there: on safari, on a boat, in a back garden. Spin the map, meet the animals, and see the weather on the day they were spotted.</p>
 					<div class="hero__ctas">
-						<a class="btn btn--primary" href="/map/">
-							@components.Icon("map-trifold")
+						<a class="btn btn--primary" href="#sightings">
+							<span>Explore sightings</span>
+							<span class="btn__arrow">
+								@components.Icon("arrow-up-right")
+							</span>
+						</a>
+						<a class="hero__play" href="/map/">
+							<span class="hero__play-icon">
+								@components.Icon("map-trifold")
+							</span>
 							<span>Start the safari</span>
 						</a>
-						<a class="btn btn--ghost" href="/animals/">
-							@components.Icon("paw-print")
-							<span>Browse animals</span>
-						</a>
 					</div>
+					<dl class="stats">
+						<div class="stat">
+							<dd data-count={ itoa(len(site.Sightings)) }>{ itoa(len(site.Sightings)) }</dd>
+							<dt>Sightings</dt>
+						</div>
+						<div class="stat">
+							<dd data-count={ itoa(len(site.Animals)) }>{ itoa(len(site.Animals)) }</dd>
+							<dt>Species</dt>
+						</div>
+						<div class="stat">
+							<dd data-count={ itoa(len(site.Countries)) }>{ itoa(len(site.Countries)) }</dd>
+							<dt>Countries</dt>
+						</div>
+						<div class="stat">
+							<dd data-count={ itoa(len(galleryPhotos(site))) }>{ itoa(len(galleryPhotos(site))) }</dd>
+							<dt>Photos</dt>
+						</div>
+					</dl>
 				</div>
 				<div class="a3d">
 					<div class="a3d__stage">
@@ -77,20 +96,63 @@ templ Home(site *safari.Site) {
 					</div>
 				</div>
 			</div>
-			<svg class="hero__grass" viewBox="0 0 1200 90" preserveAspectRatio="none" aria-hidden="true">
-				for i, d := range safari.Grass(7, 8, 34, 90) {
-					<path class={ "blade", "blade--" + itoa(i%4) } d={ d }></path>
-				}
-			</svg>
 			@templ.JSONScript("africa3d-data", site.Scene3D())
 		</section>
+		if shots := strip(site, 5); len(shots) > 0 {
+			<section class="strip" aria-labelledby="strip-title" data-strip>
+				<div class="wrap section__head">
+					<div>
+						<h2 id="strip-title">Fresh from the <em class="script">field</em></h2>
+						<p class="section__note">The newest photos, one animal each. Point at one to open it up.</p>
+					</div>
+					<div class="strip__nav" role="group" aria-label="Scroll the photos">
+						<button type="button" class="strip__btn" data-strip-step="-1" aria-label="Previous photo">
+							@components.Icon("arrow-left")
+						</button>
+						<button type="button" class="strip__btn" data-strip-step="1" aria-label="Next photo">
+							@components.Icon("arrow-right")
+						</button>
+					</div>
+				</div>
+				<ul class="strip__row wrap" role="list">
+					for i, s := range shots {
+						<li class={ "strip__item", templ.KV("is-open", i == 0) }>
+							<a class="strip__link" href={ templ.SafeURL(safari.SightingURL(s)) }>
+								<img src={ safari.Sized(safari.Photo(s), "large") } alt={ safari.Alt(s) } loading="lazy" decoding="async" width="1024" height="768"/>
+								<span class="strip__shade" aria-hidden="true"></span>
+								<span class="strip__num" aria-hidden="true">0{ itoa(i + 1) }</span>
+								<span class="strip__text">
+									<strong class="strip__name">{ safari.AnimalName(s.Species) }</strong>
+									<span class="strip__place">
+										@components.Icon("map-pin")
+										{ safari.Place(s) }, { safari.CountryName(s) }
+									</span>
+									<span class="strip__by">
+										<time datetime={ safari.ISODate(s) }>{ safari.Date(s) }</time> · by { safari.Spotter(s) }
+										if sky, ok := safari.Weather(s); ok {
+											· { sky.Temp }, { sky.Word }
+										}
+									</span>
+								</span>
+							</a>
+						</li>
+					}
+				</ul>
+				<div class="strip__dots" aria-hidden="true">
+					for i := range shots {
+						<span class={ "strip__dot", templ.KV("is-on", i == 0) }></span>
+					}
+				</div>
+			</section>
+		}
 		if s, ok := bestSpot(site); ok {
 			<section class="spot wrap" aria-labelledby="spot-title">
 				<a class="spot__photo" href={ templ.SafeURL(safari.SightingURL(s)) } data-tilt>
 					<img src={ safari.Sized(safari.Photo(s), "large") } alt={ safari.Alt(s) } loading="lazy" width="1024" height="768"/>
+					<span class="spot__sticker" aria-hidden="true">Today's pick</span>
 				</a>
 				<div class="spot__log">
-					<h2 id="spot-title">Today's best spot</h2>
+					<h2 id="spot-title">Today's best <em class="script">spot</em></h2>
 					<p class="spot__animal">
 						<a href={ templ.SafeURL(safari.SightingURL(s)) }>{ safari.AnimalName(s.Species) }</a>
 					</p>
@@ -118,15 +180,100 @@ templ Home(site *safari.Site) {
 						}
 					</dl>
 					<p class="spot__fact">{ safari.Fact(safari.AnimalName(s.Species)) }</p>
-					<a class="btn btn--primary" href={ templ.SafeURL(safari.SightingURL(s)) }>Open the field log</a>
+					<a class="btn btn--forest" href={ templ.SafeURL(safari.SightingURL(s)) }>Open the field log</a>
 				</div>
 			</section>
 		}
+		<section id="sightings" class="section wall wrap" aria-labelledby="wall-title">
+			<div class="section__head">
+				<div>
+					<h2 id="wall-title">Latest <em class="script">sightings</em></h2>
+					<p class="section__note" data-wall-note>All { itoa(len(site.Sightings)) }, newest first.</p>
+				</div>
+				<button class="btn btn--ghost btn--small" type="button" data-wall-surprise hidden>
+					@components.Icon("shuffle")
+					<span>Surprise me</span>
+				</button>
+			</div>
+			<form class="filters" data-wall="wall" role="search" aria-label="Filter sightings" hidden>
+				<label class="field field--search">
+					<span>Search</span>
+					<span class="field__box">
+						@components.Icon("magnifying-glass")
+						<input type="search" name="q" placeholder="Lion, Kajiado, a spotter's name…" autocomplete="off"/>
+					</span>
+				</label>
+				<label class="field">
+					<span>Animal</span>
+					<select name="animal">
+						<option value="">Any animal</option>
+						for _, a := range site.Animals {
+							<option value={ a.Slug }>{ a.Name } ({ itoa(len(a.Sightings)) })</option>
+						}
+					</select>
+				</label>
+				<label class="field">
+					<span>Country</span>
+					<select name="country">
+						<option value="">Anywhere</option>
+						for _, c := range site.Countries {
+							<option value={ c.Slug }>{ c.Name } ({ itoa(len(c.Sightings)) })</option>
+						}
+					</select>
+				</label>
+				<label class="field">
+					<span>From</span>
+					<input type="date" name="from"/>
+				</label>
+				<label class="field">
+					<span>Until</span>
+					<input type="date" name="to"/>
+				</label>
+				<label class="field">
+					<span>Order</span>
+					<select name="sort">
+						<option value="new">Newest first</option>
+						<option value="old">Oldest first</option>
+					</select>
+				</label>
+				<div class="filters__actions">
+					<button class="btn btn--ghost btn--small" type="reset">
+						@components.Icon("x")
+						<span>Clear</span>
+					</button>
+				</div>
+			</form>
+			<ul class="filters__quick chips" aria-label="Quick picks" hidden data-wall-quick>
+				for _, a := range topAnimals(site, 6) {
+					<li><button class="chip" type="button" data-animal={ a.Slug } aria-pressed="false">{ a.Name }</button></li>
+				}
+			</ul>
+			if len(site.Sightings) == 0 {
+				<p class="empty">Nothing here but grass. Run the seed and come back.</p>
+			} else {
+				<ul id="wall" class="cards" role="list">
+					for _, s := range site.Sightings {
+						<li { components.FilterAttrs(s)... }>
+							@components.SightingCard(s)
+						</li>
+					}
+				</ul>
+				<p class="empty" data-wall-empty hidden>No sightings match. Try another animal, or clear the filters.</p>
+				<div class="wall__more">
+					<button class="btn btn--forest" type="button" data-wall-more hidden>
+						<span>Show more sightings</span>
+						@components.Icon("arrow-right")
+					</button>
+				</div>
+			}
+		</section>
 		<section class="grassline" aria-labelledby="grass-title">
 			<div class="wrap">
 				<div class="section__head">
-					<h2 id="grass-title">Who's in the grass?</h2>
-					<p>One of each of the most-seen animals. Point at one to say hello.</p>
+					<div>
+						<h2 id="grass-title">Who's in the <em class="script">grass?</em></h2>
+						<p class="section__note">One of each of the most-seen animals. Point at one to say hello.</p>
+					</div>
 				</div>
 			</div>
 			<div class="grassline__field">
@@ -149,32 +296,16 @@ templ Home(site *safari.Site) {
 				</svg>
 			</div>
 		</section>
-		<section class="tally wrap" aria-label="The safari in numbers">
-			<p class="tally__sentence">
-				<span class="tally__num" data-count={ itoa(len(site.Sightings)) }>{ itoa(len(site.Sightings)) }</span> sightings of
-				<span class="tally__num" data-count={ itoa(len(site.Animals)) }>{ itoa(len(site.Animals)) }</span> kinds of animal in
-				<span class="tally__num" data-count={ itoa(len(site.Countries)) }>{ itoa(len(site.Countries)) }</span> countries, by
-				<span class="tally__num" data-count={ itoa(spotters(site)) }>{ itoa(spotters(site)) }</span> people who stopped to look.
-			</p>
-			<a class="tally__link" href="/stats/">
-				<span>See the full stats</span>
-				@components.Icon("arrow-right")
-			</a>
-		</section>
-		<section class="section wrap" aria-labelledby="latest-title">
-			<div class="section__head">
-				<h2 id="latest-title">Fresh from the field</h2>
-				<a class="tally__link" href="/sightings/">
-					<span>Every sighting</span>
-					@components.Icon("arrow-right")
-				</a>
-			</div>
-			@components.SightingGrid(latest(site, 6))
-		</section>
 		<section class="section wrap" aria-labelledby="countries-title">
 			<div class="section__head">
-				<h2 id="countries-title">Pick a country</h2>
-				<p>The same countries as the 3D map, as a list.</p>
+				<div>
+					<h2 id="countries-title">Pick a <em class="script">country</em></h2>
+					<p class="section__note">The taller a country on the 3D map, the more animals were seen there.</p>
+				</div>
+				<a class="tally__link" href="/stats/">
+					<span>See the numbers</span>
+					@components.Icon("arrow-right")
+				</a>
 			</div>
 			<ul class="chips">
 				for _, c := range site.Countries {

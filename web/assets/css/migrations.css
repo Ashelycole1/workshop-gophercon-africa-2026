@@ -1,0 +1,133 @@
+/* Karibu Safari: migrations, one month slider for three journeys. */
+
+.page-head .badge { margin-bottom: var(--s-3); }
+.page-head h1 { font-size: var(--text-hero); }
+
+/* The month bar sticks under the header while you scroll the routes. */
+
+.months {
+	position: sticky; top: 78px; z-index: 20;
+	display: flex; align-items: center; gap: var(--s-3);
+	padding: 12px 18px 12px 12px; margin-bottom: var(--s-5);
+	background: color-mix(in srgb, var(--paper) 88%, transparent);
+	-webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+	border: 1px solid var(--line); border-radius: 999px;
+	box-shadow: var(--shadow);
+}
+.months[hidden] { display: none; }
+.months__play {
+	flex: none; width: 52px; height: 52px; display: grid; place-items: center;
+	border: 0; border-radius: 50%; cursor: pointer;
+	background: #d4f06a; color: #15201a;
+	transition: transform .25s var(--spring);
+}
+.months__play:hover { transform: scale(1.06); }
+.months__play > span { grid-area: 1 / 1; display: flex; }
+.months__play .icon { width: 22px; height: 22px; }
+.months__icon-pause, .is-playing .months__icon-play { display: none !important; }
+.is-playing .months__icon-pause { display: flex !important; }
+
+.months__track { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.months__track input {
+	width: 100%; margin: 0; height: 28px; cursor: pointer;
+	accent-color: var(--forest); background: transparent;
+}
+.months__ticks {
+	display: grid; grid-template-columns: repeat(12, 1fr);
+	list-style: none; margin: 0; padding: 0 2px;
+	font-size: .75rem; color: var(--muted); text-align: center;
+}
+.months__ticks li { cursor: pointer; border-radius: 999px; padding: 2px 0; transition: color .2s, background-color .2s; }
+.months__ticks li:hover { color: var(--text); }
+.months__ticks li.is-now { color: #15201a; background: #d4f06a; font-weight: 600; }
+.months__now {
+	flex: none; min-width: 3.2ch;
+	font-family: var(--font-script); font-size: 1.9rem; line-height: 1; color: var(--moss);
+}
+@media (max-width: 640px) {
+	.months { border-radius: var(--radius); top: 72px; }
+	.months__ticks li:nth-child(even) { visibility: hidden; }
+	.months__now { font-size: 1.5rem; }
+}
+
+/* Each route: map on one side, the story on the other. */
+
+.routes { display: grid; gap: var(--s-6); }
+.route {
+	display: grid; gap: var(--s-4); align-items: stretch;
+	scroll-margin-top: 170px;
+}
+@media (min-width: 900px) {
+	.route { grid-template-columns: 7fr 5fr; gap: var(--s-5); }
+	.route:nth-child(even) .route__map { order: 2; }
+}
+
+.route__map {
+	position: relative; overflow: hidden;
+	aspect-ratio: 1; border-radius: var(--radius);
+	background: radial-gradient(circle at 50% 40%, var(--paper), var(--surface));
+	border: 1px solid var(--line);
+	box-shadow: var(--shadow);
+}
+@media (min-width: 900px) { .route__map { aspect-ratio: auto; min-height: 520px; } }
+.route__svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.route__land path { fill: var(--surface-2); stroke: var(--paper); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.route__seen circle { fill: var(--moss); opacity: .55; }
+.route__trail { fill: none; stroke: var(--forest); opacity: .25; stroke-dasharray: 1.4 1.4; stroke-linecap: round; }
+.route__walked { fill: none; stroke: var(--forest); stroke-linecap: round; stroke-linejoin: round; }
+.route__stops circle { fill: var(--paper); stroke: var(--forest); stroke-width: 1.5; vector-effect: non-scaling-stroke; transition: fill .3s; }
+.route__stops circle.is-now { fill: #d4f06a; }
+.route__dot { fill: #d4f06a; stroke: #15201a; stroke-width: 2.5; vector-effect: non-scaling-stroke; }
+.route__pulse { fill: #d4f06a; opacity: .45; transform-box: fill-box; transform-origin: center; animation: herd-pulse 2s ease-out infinite; }
+@keyframes herd-pulse { from { transform: scale(.4); opacity: .6; } to { transform: scale(1.4); opacity: 0; } }
+.route__walked, .route__herd { display: none; }
+.has-months .route__walked, .has-months .route__herd { display: inline; }
+.route__num {
+	position: absolute; top: 16px; left: 16px;
+	display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%;
+	background: var(--forest); color: var(--paper); font-weight: 600; font-size: .85rem;
+}
+
+.route__copy { display: flex; flex-direction: column; min-width: 0; }
+.route__animal { font-family: var(--font-script); font-size: 1.4rem; color: var(--moss); margin: 0 0 4px; }
+.route__copy h2 { font-size: var(--text-h2); margin-bottom: var(--s-2); }
+.route__summary { color: var(--muted); margin-bottom: var(--s-4); }
+
+.route__months {
+	list-style: none; margin: 0; padding: 0;
+	display: grid; gap: 4px;
+	max-height: 340px; overflow-y: auto; scrollbar-width: thin;
+	border-top: 1px solid var(--line); padding-top: 8px;
+}
+.route__months li {
+	display: grid; grid-template-columns: 3.4em 1fr; gap: 12px; align-items: start;
+	padding: 10px 12px; border-radius: var(--radius-sm);
+	transition: background-color .3s;
+}
+.has-months .route__months li { cursor: pointer; }
+.has-months .route__months li:hover { background: var(--mist); }
+.route__month { font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
+.route__where { display: grid; gap: 2px; }
+.route__where strong { font-weight: 600; }
+.route__where span { font-size: .92rem; color: var(--muted); }
+.has-months .route__months li:not(.is-now) .route__where span { display: none; }
+.route__months li.is-now { background: var(--surface); }
+.route__months li.is-now .route__month { color: var(--forest); }
+.route__months li.is-now .route__where strong { color: var(--forest); }
+
+.route__real {
+	display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+	margin: var(--s-3) 0 0; font-size: .95rem; color: var(--muted);
+}
+.route__real .icon { color: var(--moss); }
+.route__real a { font-weight: 600; }
+
+.routes__note {
+	margin-top: var(--s-6); padding: var(--s-3) 20px;
+	background: var(--mist); border-radius: var(--radius-sm);
+	color: var(--muted); font-size: .92rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.route__pulse { animation: none; opacity: .3; }
+}
