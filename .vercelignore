@@ -1,0 +1,11 @@
+# Never upload local secrets or scratch files.
+.env
+.env.*
+!.env.example
+**/.claude/settings.local.json
+*.db-journal
+*.db-wal
+*.db-shm
+bin/
+tmp/
+__pycache__/

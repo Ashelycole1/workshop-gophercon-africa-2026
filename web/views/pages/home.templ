@@ -267,6 +267,45 @@ templ Home(site *safari.Site) {
 				</div>
 			}
 		</section>
+		<section class="moving section wrap" aria-labelledby="moving-title">
+			<div class="section__head">
+				<div>
+					<h2 id="moving-title">On the move in <em class="script">{ safari.MonthNames[thisMonth()] }</em></h2>
+					<p class="section__note">Where Africa's great herds are this month.</p>
+				</div>
+				<a class="tally__link" href="/migrations/">
+					<span>Follow the whole year</span>
+					@components.Icon("arrow-right")
+				</a>
+			</div>
+			<ul class="moving__list" role="list">
+				for _, r := range safari.Routes {
+					<li class="moving__card">
+						<a class="moving__link" href={ templ.SafeURL("/migrations/#" + r.Slug) }>
+							<svg class="moving__map" viewBox={ r.ViewBox() } preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+								<g class="moving__land">
+									for _, o := range safari.Outlines() {
+										<path d={ o.D }></path>
+									}
+								</g>
+								<path class="moving__trail" d={ r.D() } style={ templ.SafeCSS("stroke-width:" + scaled(r, .6)) }></path>
+								<circle class="moving__pulse" cx={ stopX(r.Months[thisMonth()]) } cy={ stopY(r.Months[thisMonth()]) } r={ scaled(r, 3.4) }></circle>
+								<circle class="moving__dot" cx={ stopX(r.Months[thisMonth()]) } cy={ stopY(r.Months[thisMonth()]) } r={ scaled(r, 1.8) }></circle>
+							</svg>
+							<span class="moving__text">
+								<span class="moving__animal">{ r.Animal }</span>
+								<strong class="moving__name">{ r.Name }</strong>
+								<span class="moving__place">
+									@components.Icon("map-pin")
+									{ r.Months[thisMonth()].Place }
+								</span>
+								<span class="moving__caption">{ r.Months[thisMonth()].Caption }</span>
+							</span>
+						</a>
+					</li>
+				}
+			</ul>
+		</section>
 		<section class="grassline" aria-labelledby="grass-title">
 			<div class="wrap">
 				<div class="section__head">

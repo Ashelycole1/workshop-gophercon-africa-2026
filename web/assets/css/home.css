@@ -365,3 +365,31 @@
 	.peeker__window { transform: translateY(20%); }
 	.wall .cards > li.is-in { animation: none; }
 }
+
+/* On the move: this month's stop on each migration. */
+
+.moving__list {
+	display: grid; gap: var(--s-4); list-style: none; margin: 0; padding: 0;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+}
+.moving__card { display: flex; }
+.moving__link {
+	flex: 1; display: flex; flex-direction: column;
+	border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden;
+	background: var(--paper); color: var(--text); text-decoration: none;
+	box-shadow: var(--shadow);
+	transition: transform .35s var(--ease), box-shadow .35s var(--ease);
+}
+.moving__link:hover { color: var(--text); transform: translateY(-4px); box-shadow: var(--shadow-lift); }
+.moving__map { display: block; width: 100%; aspect-ratio: 16 / 10; background: radial-gradient(circle at 50% 40%, var(--paper), var(--surface)); }
+.moving__land path { fill: var(--surface-2); stroke: var(--paper); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.moving__trail { fill: none; stroke: var(--forest); stroke-linecap: round; stroke-dasharray: 1.6 1.4; opacity: .55; }
+.moving__dot { fill: #d4f06a; stroke: #15201a; stroke-width: 2.5; vector-effect: non-scaling-stroke; }
+.moving__pulse { fill: #d4f06a; transform-box: fill-box; transform-origin: center; animation: moving-pulse 2s ease-out infinite; }
+@keyframes moving-pulse { from { transform: scale(.4); opacity: .6; } to { transform: scale(1.4); opacity: 0; } }
+.moving__text { display: grid; gap: 4px; padding: 18px 20px 22px; }
+.moving__animal { font-family: var(--font-script); font-size: 1.2rem; color: var(--moss); }
+.moving__name { font-size: 1.25rem; font-weight: 600; letter-spacing: -.025em; }
+.moving__place { display: flex; align-items: center; gap: 6px; font-weight: 500; color: var(--forest); }
+.moving__caption { color: var(--muted); font-size: .94rem; }
+@media (prefers-reduced-motion: reduce) { .moving__pulse { animation: none; opacity: .3; } }
