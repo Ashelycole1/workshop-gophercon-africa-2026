@@ -29,6 +29,7 @@ func New(logger *slog.Logger, config config.Config, sightingsSvc *sighting.Servi
 	mux.Handle("GET /assets/", http.FileServerFS(assetsFs(config.IsProduction())))
 	mux.Handle("GET /{$}", handlers.Home(logger, sightingsSvc))
 
+	section(mux, "/map/", page(handlers.Map))
 	section(mux, "/sightings/", page(handlers.Sightings))
 	mux.Handle("GET /sightings/{id}", page(handlers.Sighting))
 	section(mux, "/animals/", page(handlers.Animals))

@@ -72,3 +72,16 @@ func countriesTip(site *safari.Site) string {
 	}
 	return site.Countries[0].Name + " is winning today. Can " + site.Countries[1].Name + " catch up?"
 }
+
+// years lists every year from the first sighting to the last.
+func years(site *safari.Site) []int {
+	if len(site.Sightings) == 0 {
+		return nil
+	}
+	last, first := site.Sightings[0].HappenedAt.Year(), site.Sightings[len(site.Sightings)-1].HappenedAt.Year()
+	out := make([]int, 0, last-first+1)
+	for y := first; y <= last; y++ {
+		out = append(out, y)
+	}
+	return out
+}

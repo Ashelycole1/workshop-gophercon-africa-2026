@@ -51,3 +51,8 @@ func Country(r *http.Request, site *safari.Site) (templ.Component, bool) {
 	}
 	return pages.Country(site, c), true
 }
+
+// Map plots every sighting on an interactive map.
+func Map(r *http.Request, site *safari.Site) (templ.Component, bool) {
+	return pages.Map(site), true
+}
