@@ -1,7 +1,12 @@
 package layout
 
 type BaseProps struct {
-	Title string
+	Title       string
+	Description string
+	Page        string
+	Tip         string
+	Scripts     []string
+	Styles      []string
 }
 
 templ Base(props BaseProps) {
@@ -10,14 +15,105 @@ templ Base(props BaseProps) {
 		<head>
 			<meta charset="utf-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1"/>
-			<title>{ props.Title }</title>
+			<title>{ pageTitle(props.Title) }</title>
+			<meta name="description" content={ description(props.Description) }/>
+			<meta name="theme-color" content="#E26D1F"/>
+			<meta property="og:title" content={ pageTitle(props.Title) }/>
+			<meta property="og:description" content={ description(props.Description) }/>
+			<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml"/>
+			<link rel="preload" href="/assets/fonts/fraunces-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin/>
+			<link rel="preload" href="/assets/fonts/nunito-sans-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin/>
+			<script>
+				(function () {
+					try {
+						var t = localStorage.getItem("safari_theme");
+						if (!t) t = matchMedia("(prefers-color-scheme: dark)").matches ? "night" : "day";
+						document.documentElement.dataset.theme = t;
+					} catch (e) { document.documentElement.dataset.theme = "day"; }
+				})();
+			</script>
 			<link rel="stylesheet" href="/assets/css/app.css"/>
+			for _, href := range props.Styles {
+				<link rel="stylesheet" href={ href }/>
+			}
 		</head>
-		<body>
-			<main class="container">
+		<body data-page={ props.Page }>
+			<a class="skip" href="#main">Skip to content</a>
+			<div class="sky-fx" aria-hidden="true"></div>
+			<header class="site-header">
+				<div class="site-header__inner">
+					<a class="brand" href="/" aria-label="Karibu Safari, home">
+						<span class="brand__logo"><img src="/assets/img/gopher.jpg" alt="" width="342" height="584"/></span>
+						<span class="brand__name">Karibu <em>Safari</em></span>
+					</a>
+					<button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+						<span class="nav-toggle__bars" aria-hidden="true"></span>
+						<span class="sr-only">Menu</span>
+					</button>
+					<nav id="site-nav" class="site-nav" aria-label="Main">
+						<ul>
+							for _, item := range navItems {
+								<li>
+									<a
+										href={ templ.SafeURL(item.Href) }
+										if item.Page == props.Page {
+											aria-current="page"
+										}
+									>{ item.Label }</a>
+								</li>
+							}
+						</ul>
+					</nav>
+					<button class="theme-toggle" type="button" aria-label="Switch to night safari" title="Day / night safari">
+						<span class="theme-toggle__sun" aria-hidden="true">☀️</span>
+						<span class="theme-toggle__moon" aria-hidden="true">🌙</span>
+					</button>
+				</div>
+				<div class="kente" aria-hidden="true"></div>
+			</header>
+			<main id="main" class="site-main">
 				{ children... }
 			</main>
-			<script src="/assets/js/app.js"></script>
+			<footer class="site-footer">
+				<div class="kente" aria-hidden="true"></div>
+				<div class="site-footer__inner">
+					<div class="site-footer__hello">
+						<p class="site-footer__karibu">Safari njema!</p>
+						<p>Every sighting here was spotted by a real person and shared openly. <strong>Asante</strong> to the community that made this data.</p>
+					</div>
+					<ul class="site-footer__links">
+						for _, item := range navItems {
+							<li><a href={ templ.SafeURL(item.Href) }>{ item.Label }</a></li>
+						}
+					</ul>
+					<p class="site-footer__small">
+						Sightings from <a href="https://www.gbif.org" rel="noopener">GBIF</a>,
+						weather from <a href="https://open-meteo.com" rel="noopener">Open-Meteo</a>.
+						Built in Go with templ for GopherCon Africa 2026, Nairobi. 🇰🇪
+					</p>
+				</div>
+			</footer>
+			@gopher(props.Tip)
+			<script src="/assets/js/app.js" defer></script>
+			for _, src := range props.Scripts {
+				<script src={ src } defer></script>
+			}
 		</body>
 	</html>
+}
+
+templ gopher(tip string) {
+	<aside class="gopher" data-tip={ tip } aria-label="Gopher guide">
+		<div class="gopher__bubble" role="dialog" aria-modal="false" aria-labelledby="gopher-say" hidden>
+			<button class="gopher__close" type="button" aria-label="Close the gopher's message">×</button>
+			<p id="gopher-say" class="gopher__say">Karibu! Welcome to GopherCon Africa 🌍</p>
+			<div class="gopher__actions">
+				<a class="btn btn--primary btn--small" href="/map/" data-gopher-start>Start the safari</a>
+				<button class="btn btn--ghost btn--small" type="button" data-gopher-later>Maybe later</button>
+			</div>
+		</div>
+		<button class="gopher__avatar" type="button" aria-label="Talk to the gopher guide" aria-expanded="false">
+			<img src="/assets/img/gopher.jpg" alt="" width="342" height="584"/>
+		</button>
+	</aside>
 }

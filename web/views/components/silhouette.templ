@@ -1,0 +1,11 @@
+package components
+
+import "workshop/web/safari"
+
+templ Silhouette(code string, class string) {
+	if d := safari.CountryPath(code); d != "" {
+		<svg class={ "silhouette", class } viewBox={ safari.CountryViewBox(code) } aria-hidden="true" focusable="false"><path d={ d }></path></svg>
+	} else {
+		<span class={ "silhouette", "silhouette--dot", class } aria-hidden="true">●</span>
+	}
+}

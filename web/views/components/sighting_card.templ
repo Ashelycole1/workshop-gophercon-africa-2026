@@ -1,65 +1,47 @@
 package components
 
 import (
-	"cmp"
-	"fmt"
-	"slices"
-	"strings"
-
 	"workshop/internal/domain/sighting"
-	"workshop/internal/domain/species"
+	"workshop/web/safari"
 )
 
 templ SightingCard(s sighting.Sighting) {
 	<article class="card">
-		<!-- Header -->
-		<header class="card__header">
-			<h2>{ displayName(s.Species) }</h2>
+		<a class="card__photo" href={ templ.SafeURL(safari.SightingURL(s)) } tabindex="-1" aria-hidden="true">
+			if photo := safari.Thumb(s); photo != "" {
+				<img src={ photo } alt={ safari.Alt(s) } loading="lazy" decoding="async" width="500" height="375"/>
+			} else {
+				<span class="card__nophoto">{ safari.Emoji(safari.AnimalName(s.Species)) }</span>
+			}
+			<span class="card__badge" aria-hidden="true">{ safari.Emoji(safari.AnimalName(s.Species)) }</span>
+		</a>
+		<div class="card__body">
+			<h3 class="card__title">
+				<a href={ templ.SafeURL(safari.SightingURL(s)) }>{ safari.AnimalName(s.Species) }</a>
+			</h3>
 			if s.Species.ScientificName != "" {
 				<p class="card__scientific">{ s.Species.ScientificName }</p>
 			}
-		</header>
-		<!-- Meta -->
-		<dl class="card__meta">
-			<dt>Seen</dt>
-			<dd>{ s.HappenedAt.Format("2 January 2006") }</dd>
-			<dt>Where</dt>
-			<dd>{ place(s.Location) }</dd>
-			if s.IndividualCount != nil {
-				<dt>Count</dt>
-				<dd>{ individuals(*s.IndividualCount) }</dd>
-			}
-			if s.RecordedBy != "" {
-				<dt>Recorded by</dt>
-				<dd>{ s.RecordedBy }</dd>
-			}
-		</dl>
-		<!-- Gallery -->
-		<div class="card__gallery">
-			@Gallery(s.Media)
+			<ul class="card__meta">
+				<li><span aria-hidden="true">📅</span> <time datetime={ safari.ISODate(s) }>{ safari.Date(s) }</time></li>
+				<li><span aria-hidden="true">📍</span> { safari.Place(s) }, { safari.CountryName(s) }</li>
+				<li><span aria-hidden="true">👤</span> Spotted by { safari.Spotter(s) }</li>
+			</ul>
+			@WeatherChip(s)
 		</div>
 	</article>
 }
 
-// displayName prefers the name a reader would recognise, falling back
-// through the taxonomy as GBIF records thin out.
-func displayName(sp species.Species) string {
-	return cmp.Or(sp.VernacularName, sp.CanonicalName, sp.ScientificName, "Unknown species")
-}
-
-// place joins whichever parts of the location GBIF supplied.
-func place(l sighting.Location) string {
-	parts := slices.DeleteFunc(
-		[]string{l.Locality, l.StateProvince, l.Country},
-		func(s string) bool { return s == "" },
-	)
-	return cmp.Or(strings.Join(parts, ", "), "Location unknown")
-}
-
-// individuals renders how many animals were seen in a single sighting.
-func individuals(n int) string {
-	if n == 1 {
-		return "1 individual"
+templ SightingGrid(items []sighting.Sighting) {
+	if len(items) == 0 {
+		<p class="empty">Nothing here but grass... or is there? 🌾</p>
+	} else {
+		<ul id="sightings" class="cards" role="list">
+			for _, s := range items {
+				<li class="reveal" { FilterAttrs(s)... }>
+					@SightingCard(s)
+				</li>
+			}
+		</ul>
 	}
-	return fmt.Sprintf("%d individuals", n)
 }

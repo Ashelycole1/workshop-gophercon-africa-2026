@@ -7,9 +7,39 @@ import (
 
 templ Error(message string, code int) {
 	@layout.Base(layout.BaseProps{
-		Title: "Error " + strconv.Itoa(code),
+		Title: errorTitle(code),
+		Page:  "error",
+		Tip:   "I took a wrong turn at the baobab. Let's head back to camp!",
 	}) {
-		<h1>{ strconv.Itoa(code) }</h1>
-		<p>{ message }</p>
+		<section class="lost">
+			<div class="lost__scene" aria-hidden="true">
+				<div class="lost__sun"></div>
+				<svg class="lost__hills" viewBox="0 0 1200 200" preserveAspectRatio="none"><path d="M0 120 Q200 60 420 110 T820 90 T1200 100 V200 H0Z"></path></svg>
+				<img class="lost__gopher" src="/assets/img/gopher.jpg" alt="" width="342" height="584"/>
+				<span class="lost__q">?</span>
+				<svg class="lost__grass" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0 120 V60 L20 20 L35 62 L55 10 L70 64 L92 26 L110 62 L130 6 L150 60 L172 24 L190 64 L212 14 L232 62 L254 30 L272 64 L296 8 L316 60 L338 22 L356 62 L380 12 L400 60 L424 28 L444 64 L466 10 L486 60 L508 24 L528 62 L552 6 L572 60 L594 26 L612 64 L636 12 L656 60 L678 30 L698 62 L722 8 L742 60 L764 22 L784 64 L806 14 L826 60 L848 28 L868 62 L892 6 L912 60 L934 24 L954 64 L978 12 L998 60 L1020 26 L1040 62 L1064 10 L1084 60 L1106 24 L1126 64 L1150 14 L1170 60 L1200 30 V120Z"></path></svg>
+			</div>
+			<div class="wrap lost__copy">
+				<p class="lost__code">{ strconv.Itoa(code) }</p>
+				if code == 404 {
+					<h1>Nothing here but grass... or is there?</h1>
+					<p>Our gopher followed the wrong set of hoofprints. The page you wanted isn't on this savanna.</p>
+				} else {
+					<h1>The Land Cruiser broke down</h1>
+					<p>{ message }</p>
+				}
+				<p class="lost__actions">
+					<a class="btn btn--primary" href="/">Back to camp</a>
+					<a class="btn btn--ghost" href="/map/">Open the map</a>
+				</p>
+			</div>
+		</section>
 	}
+}
+
+func errorTitle(code int) string {
+	if code == 404 {
+		return "Lost on the savanna"
+	}
+	return "Error " + strconv.Itoa(code)
 }

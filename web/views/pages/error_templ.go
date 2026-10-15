@@ -46,46 +46,70 @@ func Error(message string, code int) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<h1>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section class=\"lost\"><div class=\"lost__scene\" aria-hidden=\"true\"><div class=\"lost__sun\"></div><svg class=\"lost__hills\" viewBox=\"0 0 1200 200\" preserveAspectRatio=\"none\"><path d=\"M0 120 Q200 60 420 110 T820 90 T1200 100 V200 H0Z\"></path></svg> <img class=\"lost__gopher\" src=\"/assets/img/gopher.jpg\" alt=\"\" width=\"342\" height=\"584\"> <span class=\"lost__q\">?</span> <svg class=\"lost__grass\" viewBox=\"0 0 1200 120\" preserveAspectRatio=\"none\"><path d=\"M0 120 V60 L20 20 L35 62 L55 10 L70 64 L92 26 L110 62 L130 6 L150 60 L172 24 L190 64 L212 14 L232 62 L254 30 L272 64 L296 8 L316 60 L338 22 L356 62 L380 12 L400 60 L424 28 L444 64 L466 10 L486 60 L508 24 L528 62 L552 6 L572 60 L594 26 L612 64 L636 12 L656 60 L678 30 L698 62 L722 8 L742 60 L764 22 L784 64 L806 14 L826 60 L848 28 L868 62 L892 6 L912 60 L934 24 L954 64 L978 12 L998 60 L1020 26 L1040 62 L1064 10 L1084 60 L1106 24 L1126 64 L1150 14 L1170 60 L1200 30 V120Z\"></path></svg></div><div class=\"wrap lost__copy\"><p class=\"lost__code\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(code))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/pages/error.templ`, Line: 12, Col: 26}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/pages/error.templ`, Line: 23, Col: 46}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</h1><p>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</p>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var4 string
-			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(message)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/pages/error.templ`, Line: 13, Col: 14}
+			if code == 404 {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<h1>Nothing here but grass... or is there?</h1><p>Our gopher followed the wrong set of hoofprints. The page you wanted isn't on this savanna.</p>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			} else {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<h1>The Land Cruiser broke down</h1><p>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var4 string
+				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(message)
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/pages/error.templ`, Line: 29, Col: 17}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</p>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</p>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<p class=\"lost__actions\"><a class=\"btn btn--primary\" href=\"/\">Back to camp</a> <a class=\"btn btn--ghost\" href=\"/map/\">Open the map</a></p></div></section>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			return nil
 		})
 		templ_7745c5c3_Err = layout.Base(layout.BaseProps{
-			Title: "Error " + strconv.Itoa(code),
+			Title: errorTitle(code),
+			Page:  "error",
+			Tip:   "I took a wrong turn at the baobab. Let's head back to camp!",
 		}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		return nil
 	})
+}
+
+func errorTitle(code int) string {
+	if code == 404 {
+		return "Lost on the savanna"
+	}
+	return "Error " + strconv.Itoa(code)
 }
 
 var _ = templruntime.GeneratedTemplate

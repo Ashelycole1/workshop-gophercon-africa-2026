@@ -1,0 +1,44 @@
+package components
+
+import (
+	"strconv"
+	"workshop/web/safari"
+)
+
+templ Filter(site *safari.Site) {
+	<form class="filter" data-filter="sightings" role="search" hidden>
+		<label class="filter__search">
+			<span class="sr-only">Search by animal, place or spotter</span>
+			<span class="filter__search-icon" aria-hidden="true">🔎</span>
+			<input type="search" name="q" placeholder="Search animals, places, spotters" autocomplete="off"/>
+		</label>
+		<fieldset class="filter__group">
+			<legend>Animal</legend>
+			<div class="chips">
+				for _, a := range topAnimals(site, 12) {
+					<label class="chip chip--check">
+						<input type="checkbox" name="animal" value={ a.Slug }/>
+						<span aria-hidden="true">{ a.Emoji }</span> { a.Name } <span class="chip__count">{ strconv.Itoa(len(a.Sightings)) }</span>
+					</label>
+				}
+			</div>
+		</fieldset>
+		<fieldset class="filter__group">
+			<legend>Country</legend>
+			<div class="chips">
+				for _, c := range site.Countries {
+					<label class="chip chip--check">
+						<input type="checkbox" name="country" value={ c.Slug }/>
+						@Silhouette(c.Code, "")
+						<span>{ c.Name }</span>
+						<span class="chip__count">{ strconv.Itoa(len(c.Sightings)) }</span>
+					</label>
+				}
+			</div>
+		</fieldset>
+		<p class="filter__status">
+			<output class="filter__count" aria-live="polite">Showing { strconv.Itoa(len(site.Sightings)) } of { strconv.Itoa(len(site.Sightings)) }</output>
+			<button class="btn btn--ghost btn--small" type="reset">Clear filters</button>
+		</p>
+	</form>
+}

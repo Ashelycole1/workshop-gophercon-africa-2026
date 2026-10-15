@@ -22,11 +22,25 @@ var assets embed.FS
 // New returns a ServeMux serving the static assets and handler's patterns.
 func New(logger *slog.Logger, config config.Config, sightingsSvc *sighting.Service) *http.ServeMux {
 	mux := http.NewServeMux()
+	page := func(build handlers.Builder) http.HandlerFunc {
+		return handlers.Page(logger, sightingsSvc, build)
+	}
 
 	mux.Handle("GET /assets/", http.FileServerFS(assetsFs(config.IsProduction())))
-	mux.Handle("GET /", handlers.Home(logger, sightingsSvc))
+	mux.Handle("GET /{$}", handlers.Home(logger, sightingsSvc))
+
+	section(mux, "/sightings/", page(handlers.Sightings))
+
+	mux.Handle("GET /", handlers.NotFound(logger))
 
 	return mux
+}
+
+// section serves an index page at path, and redirects the path without its
+// trailing slash there.
+func section(mux *http.ServeMux, path string, h http.Handler) {
+	mux.Handle("GET "+path+"{$}", h)
+	mux.Handle("GET "+path[:len(path)-1], handlers.Redirect(path))
 }
 
 func assetsFs(prod bool) fs.FS {

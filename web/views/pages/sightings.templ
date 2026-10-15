@@ -1,0 +1,28 @@
+package pages
+
+import (
+	"strconv"
+	"workshop/web/safari"
+	"workshop/web/views/components"
+	"workshop/web/views/layout"
+)
+
+templ Sightings(site *safari.Site) {
+	@layout.Base(layout.BaseProps{
+		Title:       "Every sighting",
+		Description: "Every African wildlife sighting in the safari, newest first, with filters by animal and country.",
+		Page:        "sightings",
+		Tip:         "Tap an animal chip to narrow the list. Combine as many as you like!",
+		Scripts:     []string{"/assets/js/filter.js"},
+	}) {
+		<div class="wrap">
+			<header class="page-head">
+				<h1>Every sighting</h1>
+				<p class="page-head__lede">{ strconv.Itoa(len(site.Sightings)) } moments in the wild across { strconv.Itoa(len(site.Countries)) } countries, newest first. Each one was logged by a person with a camera and a lot of patience.</p>
+				<div class="kente" aria-hidden="true"></div>
+			</header>
+			@components.Filter(site)
+			@components.SightingGrid(site.Sightings)
+		</div>
+	}
+}
