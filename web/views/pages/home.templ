@@ -12,7 +12,7 @@ templ Home(site *safari.Site) {
 		Description: "Real wildlife sightings, up close: photos, a 3D map of Africa and the weather on the day, built in Go for GopherCon Africa 2026.",
 		Page:        "home",
 		Styles:      []string{"/assets/css/home.css"},
-		Scripts:     []string{"/assets/js/home.js", "/assets/js/wall.js"},
+		Scripts:     []string{"/assets/js/home.js", "/assets/js/wall.js", "/assets/js/moving.js"},
 		Modules:     []string{"/assets/js/africa3d.js"},
 	}) {
 		<section class="hero" data-africa3d aria-labelledby="hero-title">
@@ -209,45 +209,45 @@ templ Home(site *safari.Site) {
 					<span class="filters__count" data-filters-count hidden></span>
 				</button>
 				<div id="filters-more" class="filters__more">
-				<label class="field">
-					<span>Animal</span>
-					<select name="animal">
-						<option value="">Any animal</option>
-						for _, a := range site.Animals {
-							<option value={ a.Slug }>{ a.Name } ({ itoa(len(a.Sightings)) })</option>
-						}
-					</select>
-				</label>
-				<label class="field">
-					<span>Country</span>
-					<select name="country">
-						<option value="">Anywhere</option>
-						for _, c := range site.Countries {
-							<option value={ c.Slug }>{ c.Name } ({ itoa(len(c.Sightings)) })</option>
-						}
-					</select>
-				</label>
-				<label class="field">
-					<span>From</span>
-					<input type="date" name="from"/>
-				</label>
-				<label class="field">
-					<span>Until</span>
-					<input type="date" name="to"/>
-				</label>
-				<label class="field">
-					<span>Order</span>
-					<select name="sort">
-						<option value="new">Newest first</option>
-						<option value="old">Oldest first</option>
-					</select>
-				</label>
-				<div class="filters__actions">
-					<button class="btn btn--ghost btn--small" type="reset">
-						@components.Icon("x")
-						<span>Clear</span>
-					</button>
-				</div>
+					<label class="field">
+						<span>Animal</span>
+						<select name="animal">
+							<option value="">Any animal</option>
+							for _, a := range site.Animals {
+								<option value={ a.Slug }>{ a.Name } ({ itoa(len(a.Sightings)) })</option>
+							}
+						</select>
+					</label>
+					<label class="field">
+						<span>Country</span>
+						<select name="country">
+							<option value="">Anywhere</option>
+							for _, c := range site.Countries {
+								<option value={ c.Slug }>{ c.Name } ({ itoa(len(c.Sightings)) })</option>
+							}
+						</select>
+					</label>
+					<label class="field">
+						<span>From</span>
+						<input type="date" name="from"/>
+					</label>
+					<label class="field">
+						<span>Until</span>
+						<input type="date" name="to"/>
+					</label>
+					<label class="field">
+						<span>Order</span>
+						<select name="sort">
+							<option value="new">Newest first</option>
+							<option value="old">Oldest first</option>
+						</select>
+					</label>
+					<div class="filters__actions">
+						<button class="btn btn--ghost btn--small" type="reset">
+							@components.Icon("x")
+							<span>Clear</span>
+						</button>
+					</div>
 				</div>
 			</form>
 			<ul class="filters__quick chips" aria-label="Quick picks" hidden data-wall-quick>
@@ -289,16 +289,18 @@ templ Home(site *safari.Site) {
 				for _, r := range safari.Routes {
 					<li class="moving__card">
 						<a class="moving__link" href={ templ.SafeURL("/migrations/#" + r.Slug) }>
-							<svg class="moving__map" viewBox={ r.ViewBox() } preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-								<g class="moving__land">
-									for _, o := range safari.Outlines() {
-										<path d={ o.D }></path>
-									}
-								</g>
-								<path class="moving__trail" d={ r.D() } style={ templ.SafeCSS("stroke-width:" + scaled(r, .6)) }></path>
-								<circle class="moving__pulse" cx={ stopX(r.Months[thisMonth()]) } cy={ stopY(r.Months[thisMonth()]) } r={ scaled(r, 3.4) }></circle>
-								<circle class="moving__dot" cx={ stopX(r.Months[thisMonth()]) } cy={ stopY(r.Months[thisMonth()]) } r={ scaled(r, 1.8) }></circle>
-							</svg>
+							<span class="moving__frame" data-moving>
+								<svg class="moving__map" viewBox={ r.ViewBox() } preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+									<g class="moving__land">
+										for _, o := range safari.Outlines() {
+											<path d={ o.D }></path>
+										}
+									</g>
+									<path class="moving__trail" d={ r.D() } style={ templ.SafeCSS("stroke-width:" + scaled(r, .6)) }></path>
+									<circle class="moving__pulse" cx={ stopX(r.Months[thisMonth()]) } cy={ stopY(r.Months[thisMonth()]) } r={ scaled(r, 3.4) }></circle>
+									<circle class="moving__dot" cx={ stopX(r.Months[thisMonth()]) } cy={ stopY(r.Months[thisMonth()]) } r={ scaled(r, 1.8) }></circle>
+								</svg>
+							</span>
 							<span class="moving__text">
 								<span class="moving__animal">{ r.Animal }</span>
 								<strong class="moving__name">{ r.Name }</strong>

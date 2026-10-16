@@ -12,8 +12,8 @@ templ Migrations(site *safari.Site) {
 		Description: "Follow Africa's great journeys month by month: wildebeest, elephants and flamingos, with the real sightings along the way.",
 		Page:        "migrations",
 		Tip:         "Press play and watch the herds move!",
-		Styles:      []string{"/assets/css/migrations.css"},
-		Scripts:     []string{"/assets/js/migrations.js"},
+		Styles:      []string{"/assets/vendor/leaflet/leaflet.css", "/assets/css/migrations.css"},
+		Scripts:     []string{"/assets/vendor/leaflet/leaflet.js", "/assets/js/migrations.js"},
 	}) {
 		<header class="page-head wrap">
 			<p class="badge">

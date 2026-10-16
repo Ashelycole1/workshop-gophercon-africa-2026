@@ -1,6 +1,8 @@
 // Migrations: one month slider moves every herd along its trail, the walked
 // part of the trail fills in, and the month's stop is highlighted. Play runs
-// through the year.
+// through the year. With Leaflet loaded, each route is redrawn over Esri's
+// satellite imagery; the SVG underneath stays as the fallback and still does
+// the path maths.
 (function () {
 	"use strict";
 
@@ -35,17 +37,74 @@
 			return n === 0 ? 0 : total * best / 800;
 		});
 		trail.style.strokeDasharray = total + " " + total;
-		return {
+		var r = {
 			el: el, trail: trail, herd: herd, total: total, at: at, pos: null, frame: 0,
 			stops: el.querySelectorAll("[data-stop]"),
-			months: el.querySelectorAll("[data-month]")
+			months: el.querySelectorAll("[data-month]"),
+			samples: samples
 		};
+		if (window.L) satellite(r);
+		return r;
+	}
+
+	// latLng undoes the SVG map's projection: x = (lng + 18.5) * 10, y = (38 - lat) * 10.
+	function latLng(x, y) { return [38 - y / 10, x / 10 - 18.5]; }
+
+	function satellite(r) {
+		var box = r.el.querySelector(".route__map");
+		var div = document.createElement("div");
+		div.className = "route__leaf";
+		div.setAttribute("aria-label", r.el.querySelector("svg").getAttribute("aria-label"));
+		box.insertBefore(div, box.firstChild);
+
+		// One finger scrolls the page on a phone; pinch or the buttons zoom.
+		var map = L.map(div, { scrollWheelZoom: false, zoomControl: false, zoomSnap: 0.25, dragging: !L.Browser.mobile });
+		L.control.zoom({ position: "bottomright" }).addTo(map);
+		L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+			maxZoom: 17,
+			attribution: "Imagery &copy; Esri, Maxar, Earthstar Geographics"
+		}).addTo(map);
+		L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}", {
+			maxZoom: 17, opacity: 0.8
+		}).addTo(map);
+
+		r.line = r.samples.map(function (p) { return latLng(p.x, p.y); });
+		L.polyline(r.line, { color: "#ffffff", weight: 3, opacity: 0.75, dashArray: "2 9", lineCap: "round", interactive: false }).addTo(map);
+		r.walked = L.polyline([], { color: "#d4f06a", weight: 5, opacity: 0.95, lineCap: "round", lineJoin: "round", interactive: false }).addTo(map);
+
+		r.el.querySelectorAll(".route__seen circle").forEach(function (c) {
+			var t = c.querySelector("title");
+			L.circleMarker(latLng(+c.getAttribute("cx"), +c.getAttribute("cy")), {
+				radius: 5, color: "#ffffff", weight: 1.5, fillColor: "#4e7d3a", fillOpacity: 0.95
+			}).bindTooltip(t ? t.textContent : "A sighting", { direction: "top", className: "route__tip" }).addTo(map);
+		});
+
+		r.dots = Array.prototype.map.call(r.stops, function (c, i) {
+			var label = r.months[i].querySelector(".route__month").textContent + ": " + r.months[i].querySelector("strong").textContent;
+			return L.circleMarker(latLng(+c.getAttribute("cx"), +c.getAttribute("cy")), {
+				radius: 6, color: "#1f4d3a", weight: 2, fillColor: "#ffffff", fillOpacity: 1
+			}).bindTooltip(label, { direction: "top", className: "route__tip" }).on("click", function () { pick(i); }).addTo(map);
+		});
+
+		r.pin = L.marker(r.line[0], {
+			interactive: false, keyboard: false, zIndexOffset: 1000,
+			icon: L.divIcon({ className: "route__herd-pin", html: "<span></span>", iconSize: [26, 26] })
+		}).addTo(map);
+
+		map.fitBounds(L.latLngBounds(r.line), { padding: [44, 44] });
+		new ResizeObserver(function () { map.invalidateSize(); }).observe(div);
+		box.classList.add("has-leaf");
 	}
 
 	function place(r, len) {
 		var p = r.trail.getPointAtLength(len);
 		r.herd.setAttribute("transform", "translate(" + p.x.toFixed(2) + " " + p.y.toFixed(2) + ")");
 		r.trail.style.strokeDashoffset = String(r.total - len);
+		if (r.pin) {
+			var here = latLng(p.x, p.y);
+			r.pin.setLatLng(here);
+			r.walked.setLatLngs(r.line.slice(0, Math.floor(len / r.total * 800) + 1).concat([here]));
+		}
 	}
 
 	function go(r, month) {
@@ -54,6 +113,7 @@
 		cancelAnimationFrame(r.frame);
 		r.stops.forEach(function (s, i) { s.classList.toggle("is-now", i === month); });
 		r.months.forEach(function (m, i) { m.classList.toggle("is-now", i === month); });
+		if (r.dots) r.dots.forEach(function (d, i) { d.setStyle({ fillColor: i === month ? "#d4f06a" : "#ffffff" }).setRadius(i === month ? 8 : 6); });
 		if (still || from === to) { r.pos = to; place(r, to); return; }
 		var start = performance.now(), dur = 900;
 		(function step(t) {
@@ -100,9 +160,10 @@
 	});
 	routes.forEach(function (r) {
 		r.months.forEach(function (m, i) {
-			m.addEventListener("click", function () { stop(); show(i, false); });
+			m.addEventListener("click", function () { pick(i); });
 		});
 	});
+	function pick(i) { stop(); show(i, false); }
 
 	bar.hidden = false;
 	document.documentElement.classList.add("has-months");

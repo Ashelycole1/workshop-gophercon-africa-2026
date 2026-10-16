@@ -685,8 +685,8 @@ func Migrations(site *safari.Site) templ.Component {
 			Description: "Follow Africa's great journeys month by month: wildebeest, elephants and flamingos, with the real sightings along the way.",
 			Page:        "migrations",
 			Tip:         "Press play and watch the herds move!",
-			Styles:      []string{"/assets/css/migrations.css"},
-			Scripts:     []string{"/assets/js/migrations.js"},
+			Styles:      []string{"/assets/vendor/leaflet/leaflet.css", "/assets/css/migrations.css"},
+			Scripts:     []string{"/assets/vendor/leaflet/leaflet.js", "/assets/js/migrations.js"},
 		}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

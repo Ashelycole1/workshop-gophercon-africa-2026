@@ -43,7 +43,9 @@ so the other pages follow. Use the new names in new code. Lime is never used for
 4. Latest sightings (`#sightings`): search, animal, country, from/until, order, clear; quick animal
    chips; 24 at a time with "Show more"; "Surprise me"; filters saved in the address bar.
    Without JavaScript every sighting is shown and the filters stay hidden.
-5. On the move in {Month}: three mini route maps linking to `/migrations/#slug`.
+5. On the move in {Month}: three mini route maps linking to `/migrations/#slug`. Each is a still
+   Esri satellite map (dashed lime trail, pulsing herd dot) drawn by `moving.js`, which loads
+   Leaflet only as the teaser nears the screen; the SVG stays underneath as the fallback.
 6. Who's in the grass (peekers, green grass).
 7. Pick a country chips.
 
@@ -58,6 +60,14 @@ so the other pages follow. Use the new names in new code. Lime is never used for
 - On touch screens the grass animals stand a little taller and only the front row shows;
   hints say "tap" and "swipe" instead of "point" and "hover".
 - The gopher guide and its bubble are smaller.
+
+## Migrations page
+
+- Each route's map is Leaflet over Esri satellite imagery, with Esri's borders and place names on
+  top. The SVG drawing stays underneath (hidden) as the fallback and for the trail maths.
+- The trail is dashed white, the part walked so far solid lime, and the herd a pulsing lime dot.
+  Month stops are white dots (lime for the current month), and real sightings are moss dots.
+- No scroll-wheel zoom; on phones one finger scrolls the page rather than panning the map.
 
 ## Avoid
 

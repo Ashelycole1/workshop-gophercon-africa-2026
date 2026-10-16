@@ -387,7 +387,14 @@
 	transition: transform .35s var(--ease), box-shadow .35s var(--ease);
 }
 .moving__link:hover { color: var(--text); transform: translateY(-4px); box-shadow: var(--shadow-lift); }
+.moving__frame { position: relative; display: block; overflow: hidden; }
 .moving__map { display: block; width: 100%; aspect-ratio: 16 / 10; background: radial-gradient(circle at 50% 40%, var(--paper), var(--surface)); }
+.moving__leaf { position: absolute; inset: 0; z-index: 1; display: block; pointer-events: none; background: #1b2a22; font-family: var(--font-body); }
+.moving__frame.has-leaf .moving__map { visibility: hidden; }
+.moving__leaf .leaflet-control-attribution { font-size: 9px; background: rgb(255 255 255 / .6); }
+.route__herd-pin span, .route__herd-pin::before { content: ""; position: absolute; border-radius: 50%; }
+.route__herd-pin::before { inset: 0; background: #d4f06a; animation: moving-pulse 2s ease-out infinite; }
+.route__herd-pin span { inset: 5px; background: #d4f06a; border: 3px solid #15201a; box-shadow: 0 0 0 2px #fff; }
 .moving__land path { fill: var(--surface-2); stroke: var(--paper); stroke-width: 1; vector-effect: non-scaling-stroke; }
 .moving__trail { fill: none; stroke: var(--forest); stroke-linecap: round; stroke-dasharray: 1.6 1.4; opacity: .55; }
 .moving__dot { fill: #d4f06a; stroke: #15201a; stroke-width: 2.5; vector-effect: non-scaling-stroke; }
@@ -398,7 +405,7 @@
 .moving__name { font-size: 1.25rem; font-weight: 600; letter-spacing: -.025em; }
 .moving__place { display: flex; align-items: center; gap: 6px; font-weight: 500; color: var(--forest); }
 .moving__caption { color: var(--muted); font-size: .94rem; }
-@media (prefers-reduced-motion: reduce) { .moving__pulse { animation: none; opacity: .3; } }
+@media (prefers-reduced-motion: reduce) { .moving__pulse, .route__herd-pin::before { animation: none; opacity: .3; } }
 
 /* Phones: one thumb, one column. Rows you swipe instead of tall stacks, the
  * filters folded behind one button, and text inputs at 16px so iOS doesn't

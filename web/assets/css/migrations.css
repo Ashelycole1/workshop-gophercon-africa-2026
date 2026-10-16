@@ -83,10 +83,22 @@
 .route__walked, .route__herd { display: none; }
 .has-months .route__walked, .has-months .route__herd { display: inline; }
 .route__num {
-	position: absolute; top: 16px; left: 16px;
+	position: absolute; top: 16px; left: 16px; z-index: 2;
 	display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%;
 	background: var(--forest); color: var(--paper); font-weight: 600; font-size: .85rem;
 }
+
+/* Satellite view: Leaflet over the SVG, which stays for the path maths. */
+.route__leaf { position: absolute; inset: 0; z-index: 1; background: #1b2a22; font-family: var(--font-body); }
+.route__map.has-leaf { background: #1b2a22; }
+.has-leaf .route__svg { visibility: hidden; }
+.route__leaf .leaflet-bar { border: 0; box-shadow: 0 6px 20px rgb(0 0 0 / .3); border-radius: 14px; overflow: hidden; }
+.route__leaf .leaflet-bar a { width: 38px; height: 38px; line-height: 38px; color: #15201a; }
+.route__leaf .leaflet-control-attribution { font-size: 10px; }
+.route__herd-pin span, .route__herd-pin::before { content: ""; position: absolute; border-radius: 50%; }
+.route__herd-pin::before { inset: 0; background: #d4f06a; animation: herd-pulse 2s ease-out infinite; }
+.route__herd-pin span { inset: 5px; background: #d4f06a; border: 3px solid #15201a; box-shadow: 0 0 0 2px #fff; }
+.route__tip { font: 500 .85rem var(--font-body); border: 0; border-radius: 10px; box-shadow: 0 8px 20px -6px rgb(0 0 0 / .45); }
 
 .route__copy { display: flex; flex-direction: column; min-width: 0; }
 .route__animal { font-family: var(--font-script); font-size: 1.4rem; color: var(--moss); margin: 0 0 4px; }
@@ -129,5 +141,5 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.route__pulse { animation: none; opacity: .3; }
+	.route__pulse, .route__herd-pin::before { animation: none; opacity: .3; }
 }
