@@ -52,8 +52,13 @@ func section(mux *http.ServeMux, path string, h http.Handler) {
 	mux.Handle("GET "+path[:len(path)-1], handlers.Redirect(path))
 }
 
+// assetsFs serves assets from disk in development, so edits show on refresh,
+// and the embedded copy in production or wherever web/assets isn't on disk.
 func assetsFs(prod bool) fs.FS {
 	if prod {
+		return assets
+	}
+	if _, err := os.Stat("web/assets"); err != nil {
 		return assets
 	}
 	return os.DirFS("web")

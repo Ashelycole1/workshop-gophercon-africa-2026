@@ -43,8 +43,21 @@ so the other pages follow. Use the new names in new code. Lime is never used for
 4. Latest sightings (`#sightings`): search, animal, country, from/until, order, clear; quick animal
    chips; 24 at a time with "Show more"; "Surprise me"; filters saved in the address bar.
    Without JavaScript every sighting is shown and the filters stay hidden.
-5. Who's in the grass (peekers, green grass).
-6. Pick a country chips.
+5. On the move in {Month}: three mini route maps linking to `/migrations/#slug`.
+6. Who's in the grass (peekers, green grass).
+7. Pick a country chips.
+
+## On a phone (640px and under, end of `home.css`)
+
+- One column; the hero's grid column is `minmax(0, 1fr)` so the 3D canvas can't widen the page.
+- Main button full width; the stats stay in four columns.
+- Filters fold behind a "Filters" button beside the search, with a lime count of filters set.
+- Quick chips, the migration cards and the country chips (three rows) scroll sideways
+  instead of stacking.
+- 12 sightings at a time instead of 24, and inputs at 16px so iOS doesn't zoom.
+- On touch screens the grass animals stand a little taller and only the front row shows;
+  hints say "tap" and "swipe" instead of "point" and "hover".
+- The gopher guide and its bubble are smaller.
 
 ## Avoid
 

@@ -1,0 +1,15 @@
+# Render blueprint: builds the Dockerfile and runs `workshop web`.
+# Render sets PORT itself, and the app reads it.
+services:
+  - type: web
+    name: karibu-safari
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: DB_URI
+        value: file:/app/workshop.db

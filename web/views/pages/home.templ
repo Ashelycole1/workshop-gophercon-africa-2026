@@ -75,7 +75,7 @@ templ Home(site *safari.Site) {
 						<p class="a3d__hint">
 							@components.Icon("hand-grabbing")
 							<span class="for-mouse">Drag to turn. Hover a pin to meet the animal.</span>
-							<span class="for-touch">Swipe sideways to turn. Tap a pin to meet the animal.</span>
+							<span class="for-touch">Swipe to turn, tap a pin</span>
 						</p>
 						<div class="a3d__controls" role="group" aria-label="Turn the map">
 							<button type="button" data-turn="left" aria-label="Turn the map left">
@@ -103,7 +103,7 @@ templ Home(site *safari.Site) {
 				<div class="wrap section__head">
 					<div>
 						<h2 id="strip-title">Fresh from the <em class="script">field</em></h2>
-						<p class="section__note">The newest photos, one animal each. Point at one to open it up.</p>
+						<p class="section__note"><span class="for-mouse">The newest photos, one animal each. Point at one to open it up.</span><span class="for-touch">The newest photos, one animal each. Swipe through them.</span></p>
 					</div>
 					<div class="strip__nav" role="group" aria-label="Scroll the photos">
 						<button type="button" class="strip__btn" data-strip-step="-1" aria-label="Previous photo">
@@ -203,6 +203,12 @@ templ Home(site *safari.Site) {
 						<input type="search" name="q" placeholder="Lion, Kajiado, a spotter's name…" autocomplete="off"/>
 					</span>
 				</label>
+				<button class="filters__toggle" type="button" aria-expanded="false" aria-controls="filters-more" data-filters-toggle>
+					@components.Icon("funnel")
+					<span>Filters</span>
+					<span class="filters__count" data-filters-count hidden></span>
+				</button>
+				<div id="filters-more" class="filters__more">
 				<label class="field">
 					<span>Animal</span>
 					<select name="animal">
@@ -241,6 +247,7 @@ templ Home(site *safari.Site) {
 						@components.Icon("x")
 						<span>Clear</span>
 					</button>
+				</div>
 				</div>
 			</form>
 			<ul class="filters__quick chips" aria-label="Quick picks" hidden data-wall-quick>
@@ -311,7 +318,7 @@ templ Home(site *safari.Site) {
 				<div class="section__head">
 					<div>
 						<h2 id="grass-title">Who's in the <em class="script">grass?</em></h2>
-						<p class="section__note">One of each of the most-seen animals. Point at one to say hello.</p>
+						<p class="section__note">One of each of the most-seen animals. <span class="for-mouse">Point at one to say hello.</span><span class="for-touch">Tap one to say hello.</span></p>
 					</div>
 				</div>
 			</div>
@@ -335,11 +342,11 @@ templ Home(site *safari.Site) {
 				</svg>
 			</div>
 		</section>
-		<section class="section wrap" aria-labelledby="countries-title">
+		<section class="section countries wrap" aria-labelledby="countries-title">
 			<div class="section__head">
 				<div>
 					<h2 id="countries-title">Pick a <em class="script">country</em></h2>
-					<p class="section__note">The taller a country on the 3D map, the more animals were seen there.</p>
+					<p class="section__note">The taller a country on the 3D map, the more animals were seen there. <span class="for-touch">Swipe for more.</span></p>
 				</div>
 				<a class="tally__link" href="/stats/">
 					<span>See the numbers</span>

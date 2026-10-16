@@ -285,6 +285,10 @@ function init(root, data) {
 			x = (ndc.x * 0.5 + 0.5) * cr.width;
 			y = (-ndc.y * 0.5 + 0.5) * cr.height;
 		}
+		// Keep the card on screen: CSS lifts it above the point and centres it.
+		const hw = tip.offsetWidth / 2, h = tip.offsetHeight + 22;
+		x = Math.min(Math.max(x, hw + 8), r.width - hw - 8);
+		y = Math.max(y, h + 8);
 		tip.style.transform = "translate(" + Math.round(x) + "px," + Math.round(y) + "px)";
 	}
 

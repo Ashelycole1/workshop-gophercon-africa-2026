@@ -4,7 +4,8 @@
 (function () {
 	"use strict";
 
-	var PAGE = 24;
+	// A phone gets half as many cards at a time, since they stack one per row.
+	var PAGE = matchMedia("(max-width: 640px)").matches ? 12 : 24;
 
 	var form = document.querySelector("form[data-wall]");
 	var list = form && document.getElementById(form.dataset.wall);
@@ -22,6 +23,8 @@
 		var more = document.querySelector("[data-wall-more]");
 		var surprise = document.querySelector("[data-wall-surprise]");
 		var quick = document.querySelector("[data-wall-quick]");
+		var toggle = form.querySelector("[data-filters-toggle]");
+		var count = form.querySelector("[data-filters-count]");
 		var limit = PAGE;
 		var matched = [];
 		var frame = 0;
@@ -80,6 +83,9 @@
 					b.classList.toggle("is-active", on);
 				});
 			}
+			var set = ["animal", "country", "from", "to"].filter(function (k) { return v[k]; }).length + (v.sort === "old" ? 1 : 0);
+			count.textContent = String(set);
+			count.hidden = set === 0;
 			remember(v);
 		}
 
@@ -109,6 +115,13 @@
 		form.addEventListener("reset", function () { setTimeout(function () { schedule(true); }); });
 		form.addEventListener("submit", function (e) { e.preventDefault(); });
 
+		// On a phone only the search shows until "Filters" opens the rest.
+		toggle.addEventListener("click", function () {
+			var open = !form.classList.contains("is-open");
+			form.classList.toggle("is-open", open);
+			toggle.setAttribute("aria-expanded", open ? "true" : "false");
+		});
+
 		more.addEventListener("click", function () {
 			var first = matched[limit];
 			limit += PAGE;
@@ -136,6 +149,7 @@
 		}
 
 		restore();
+		if (["animal", "country", "from", "to"].some(function (k) { return form.elements[k].value; })) toggle.click();
 		form.hidden = false;
 		surprise.hidden = false;
 		render();

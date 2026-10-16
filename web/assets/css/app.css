@@ -305,6 +305,13 @@ a:hover { color: var(--accent-text); }
 }
 @media (max-width: 400px) {
 	.brand__name { font-size: 1.1rem; }
+	.brand__logo { width: 40px; height: 40px; }
+}
+@media (max-width: 640px) {
+	.site-header__inner { min-height: 60px; gap: 10px; }
+	.site-footer { margin-top: var(--s-6); border-radius: 24px 24px 0 0; }
+	.site-footer__inner { padding-top: var(--s-5); }
+	a, button, summary { -webkit-tap-highlight-color: transparent; }
 }
 @keyframes drop { from { opacity: 0; transform: translateY(-8px); } }
 
@@ -511,6 +518,14 @@ a:hover { color: var(--accent-text); }
 }
 .gopher__close:hover { background: var(--sand-100); }
 .gopher__bubble--tip .gopher__actions { display: none; }
+@media (max-width: 640px) {
+	.gopher { right: 12px; bottom: 12px; gap: 10px; }
+	.gopher__avatar { width: 58px; height: 58px; }
+	.gopher.is-big .gopher__avatar { width: 80px; height: 80px; }
+	.gopher__bubble { width: min(280px, calc(100vw - 24px)); padding: 14px 14px 16px; }
+	.gopher__say { font-size: 1.02rem; margin-bottom: var(--s-2); }
+	.gopher__bubble::before { right: 24px; }
+}
 .gopher__bubble--tip .gopher__say { font-size: 1.05rem; margin-bottom: 0; }
 
 @keyframes pop { from { opacity: 0; transform: scale(.6) translateY(20px); } }
